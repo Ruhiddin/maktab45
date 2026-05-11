@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
 import type { Category, StudentRank } from '../types';
-import { buildYearHref, cn, formatGradeSection } from '../lib/utils';
+import { buildStudentHref, buildYearHref, cn, formatGradeSection } from '../lib/utils';
 import CategoryMiniBar from './CategoryMiniBar';
 
 type Props = {
@@ -70,7 +70,7 @@ function PodiumCard({ student, rank, category, selectedYear }: { student: Studen
   // Heuristic until we have per-student qualifications on leaderboard:
   const hasHotStreak = (student.recent_activity_count ?? 0) >= 3;
   const navigateToStudent = () => {
-    window.location.href = buildYearHref(`/student/${student.student_id}`, selectedYear);
+    window.location.href = buildStudentHref(student.student_id, selectedYear);
   };
 
   return (

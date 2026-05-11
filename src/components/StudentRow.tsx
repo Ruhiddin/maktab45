@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { buildYearHref, cn, formatGradeSection } from '../lib/utils';
+import { buildStudentHref, buildYearHref, cn, formatGradeSection } from '../lib/utils';
 import type { Category, StudentRank } from '../types';
 import BadgePill from './BadgePill';
 import RankDeltaChip from './RankDeltaChip';
@@ -96,7 +96,7 @@ export default function StudentRow({
   }, [student.name, searchQuery]);
 
   const navigateToStudent = () => {
-    window.location.href = buildYearHref(`/student/${student.student_id}`, selectedYear);
+    window.location.href = buildStudentHref(student.student_id, selectedYear);
   };
 
   return (

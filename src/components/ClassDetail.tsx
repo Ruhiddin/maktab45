@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts';
 import { ArrowLeft, Users, Award, TrendingUp, Zap, PieChart as PieChartIcon, Layers3 } from 'lucide-react';
 import { fetchMostActiveTeacherForClass } from '../lib/publicData';
-import { buildYearHref, formatGradeSection } from '../lib/utils';
+import { buildStudentHref, buildYearHref, formatGradeSection } from '../lib/utils';
 import type { StudentRank } from '../types';
 
 interface Props {
@@ -414,7 +414,7 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
             {top5.map((s, i) => (
               <motion.a
                 key={s.student_id}
-                href={buildYearHref(`/student/${s.student_id}`, selectedYear)}
+                href={buildStudentHref(s.student_id, selectedYear)}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.05 * i }}

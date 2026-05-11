@@ -11,7 +11,7 @@ import type { Qualification, StudentDetail as StudentDetailType, StudentRank } f
 type Props = {
   locale: Locale;
   pathname: string;
-  studentId: string;
+  studentId?: string | null;
   archiveYears: number[];
   currentAcademicYear: string;
 };
@@ -35,6 +35,13 @@ export default function StudentDetailView({
   const [activeLocale, setActiveLocale] = useState<Locale>(() => resolveRuntimeLocale(locale));
   const m = getMessages(activeLocale);
   const [selectedYear, setSelectedYear] = useState<string | null>(() => getSelectedArchiveYear(archiveYears));
+  const [activeStudentId, setActiveStudentId] = useState<string | null>(() => {
+    if (typeof window === 'undefined') {
+      return studentId ?? null;
+    }
+
+    return new URLSearchParams(window.location.search).get('id') || studentId || null;
+  });
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState<StudentDetailType | null>(null);
   const [qualifications, setQualifications] = useState<Qualification[]>([]);
@@ -45,17 +52,27 @@ export default function StudentDetailView({
     const syncFromLocation = () => {
       setActiveLocale(resolveRuntimeLocale(locale));
       setSelectedYear(getSelectedArchiveYear(archiveYears));
+      setActiveStudentId(new URLSearchParams(window.location.search).get('id') || studentId || null);
     };
     syncFromLocation();
     window.addEventListener('popstate', syncFromLocation);
     return () => window.removeEventListener('popstate', syncFromLocation);
-  }, [archiveYears, locale]);
+  }, [archiveYears, locale, studentId]);
 
   useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
       setLoading(true);
+
+      if (!activeStudentId) {
+        setStudent(null);
+        setQualifications([]);
+        setRanking(null);
+        setClassmates([]);
+        setLoading(false);
+        return;
+      }
 
       if (selectedYear) {
         try {
@@ -64,16 +81,16 @@ export default function StudentDetailView({
           const archiveStudents = (archive?.students ?? []).map(normalizeArchiveStudent);
           const archiveQualifications = (archive?.qualifications ?? []).map(normalizeArchiveQualification);
           const archiveRankings = buildArchiveRankingData(archive);
-          const nextStudent = archiveStudents.find((entry) => entry.id === studentId) || null;
+          const nextStudent = archiveStudents.find((entry) => entry.id === activeStudentId) || null;
 
           if (!cancelled) {
             setStudent(nextStudent);
             setQualifications(
               archiveQualifications
-                .filter((qualification) => qualification.student_id === studentId)
+                .filter((qualification) => qualification.student_id === activeStudentId)
                 .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
             );
-            setRanking(archiveRankings.find((entry) => entry.student_id === studentId) || null);
+            setRanking(archiveRankings.find((entry) => entry.student_id === activeStudentId) || null);
             setClassmates(
               nextStudent
                 ? archiveRankings.filter(
@@ -98,11 +115,11 @@ export default function StudentDetailView({
       }
 
       if (isPlaceholderMode()) {
-        const nextStudent = MOCK_STUDENTS.find((entry) => entry.id === studentId) || null;
+        const nextStudent = MOCK_STUDENTS.find((entry) => entry.id === activeStudentId) || null;
         if (!cancelled) {
           setStudent(nextStudent);
-          setQualifications(MOCK_QUALIFICATIONS.filter((qualification) => qualification.student_id === studentId));
-          setRanking(MOCK_RANKINGS.find((entry) => entry.student_id === studentId) || null);
+          setQualifications(MOCK_QUALIFICATIONS.filter((qualification) => qualification.student_id === activeStudentId));
+          setRanking(MOCK_RANKINGS.find((entry) => entry.student_id === activeStudentId) || null);
           setClassmates(
             nextStudent
               ? MOCK_RANKINGS.filter(
@@ -117,16 +134,16 @@ export default function StudentDetailView({
         return;
       }
 
-      const { data: studentData } = await supabase.from('students').select('*').eq('id', studentId).single();
+      const { data: studentData } = await supabase.from('students').select('*').eq('id', activeStudentId).single();
       const nextStudent = (studentData as StudentDetailType | null) ?? null;
 
       const { data: qualificationData } = await supabase
         .from('qualifications')
         .select('*')
-        .eq('student_id', studentId)
+        .eq('student_id', activeStudentId)
         .order('created_at', { ascending: false });
 
-      const { data: rankingData } = await supabase.from('live_ranking').select('*').eq('student_id', studentId).single();
+      const { data: rankingData } = await supabase.from('live_ranking').select('*').eq('student_id', activeStudentId).single();
 
       let nextClassmates: StudentRank[] = [];
       if (nextStudent) {
@@ -157,7 +174,7 @@ export default function StudentDetailView({
     return () => {
       cancelled = true;
     };
-  }, [selectedYear, studentId]);
+  }, [activeStudentId, selectedYear]);
 
   const backHref = useMemo(() => buildYearHref('/', selectedYear), [selectedYear]);
 

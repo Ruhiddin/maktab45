@@ -41,3 +41,11 @@ export function buildYearHref(pathname: string, selectedYear?: string | null): s
   const params = new URLSearchParams({ year: selectedYear });
   return `${basePath}?${params.toString()}`;
 }
+
+export function buildStudentHref(studentId: string, selectedYear?: string | null): string {
+  const params = new URLSearchParams({ id: studentId });
+  if (selectedYear) {
+    params.set('year', selectedYear);
+  }
+  return `${withBasePath('/student')}?${params.toString()}`;
+}

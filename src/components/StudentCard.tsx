@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import type { StudentRank } from '../types';
-import { buildYearHref, cn, formatGradeSection } from '../lib/utils';
+import { buildStudentHref, cn, formatGradeSection } from '../lib/utils';
 import RankDeltaChip from './RankDeltaChip';
 import BadgePill from './BadgePill';
 import CategoryMiniBar from './CategoryMiniBar';
@@ -21,7 +21,7 @@ export default function StudentCard({
 }) {
   return (
     <motion.a
-      href={buildYearHref(`/student/${student.student_id}`, selectedYear)}
+      href={buildStudentHref(student.student_id, selectedYear)}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       aria-label={`Open ${student.name}, ranked ${rank}, ${formatGradeSection(student.grade, student.section)}`}
