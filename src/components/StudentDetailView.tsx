@@ -5,7 +5,7 @@ import { buildArchiveRankingData, normalizeArchiveQualification, normalizeArchiv
 import { isPlaceholderMode, MOCK_QUALIFICATIONS, MOCK_RANKINGS, MOCK_STUDENTS } from '../lib/mockData';
 import { supabase } from '../lib/supabase';
 import { buildYearHref, withBasePath } from '../lib/utils';
-import { getMessages, type Locale } from '../lib/i18n';
+import { getMessages, resolveRuntimeLocale, type Locale } from '../lib/i18n';
 import type { Qualification, StudentDetail as StudentDetailType, StudentRank } from '../types';
 
 type Props = {
@@ -32,7 +32,8 @@ export default function StudentDetailView({
   archiveYears,
   currentAcademicYear,
 }: Props) {
-  const m = getMessages(locale);
+  const [activeLocale, setActiveLocale] = useState<Locale>(() => resolveRuntimeLocale(locale));
+  const m = getMessages(activeLocale);
   const [selectedYear, setSelectedYear] = useState<string | null>(() => getSelectedArchiveYear(archiveYears));
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState<StudentDetailType | null>(null);
@@ -41,11 +42,14 @@ export default function StudentDetailView({
   const [classmates, setClassmates] = useState<StudentRank[]>([]);
 
   useEffect(() => {
-    const syncFromLocation = () => setSelectedYear(getSelectedArchiveYear(archiveYears));
+    const syncFromLocation = () => {
+      setActiveLocale(resolveRuntimeLocale(locale));
+      setSelectedYear(getSelectedArchiveYear(archiveYears));
+    };
     syncFromLocation();
     window.addEventListener('popstate', syncFromLocation);
     return () => window.removeEventListener('popstate', syncFromLocation);
-  }, [archiveYears]);
+  }, [archiveYears, locale]);
 
   useEffect(() => {
     let cancelled = false;
@@ -162,7 +166,7 @@ export default function StudentDetailView({
       <div className="max-w-5xl mx-auto px-4 mb-6 flex justify-center">
         <ClientStudyYearPicker
           pathname={pathname}
-          locale={locale}
+          locale={activeLocale}
           currentAcademicYear={currentAcademicYear}
           archiveYears={archiveYears}
           selectedYear={selectedYear}
@@ -177,7 +181,7 @@ export default function StudentDetailView({
         </div>
       ) : student ? (
         <StudentDetail
-          locale={locale}
+          locale={activeLocale}
           student={student}
           qualifications={qualifications}
           ranking={ranking}

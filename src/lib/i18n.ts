@@ -25,6 +25,14 @@ export function resolveLocale(url: URL, cookieValue?: string | null): Locale {
   return DEFAULT_LOCALE;
 }
 
+export function resolveRuntimeLocale(initialLocale: Locale): Locale {
+  if (typeof window === 'undefined') return initialLocale;
+
+  const queryLocale = new URLSearchParams(window.location.search).get('lang');
+  if (isLocale(queryLocale)) return queryLocale;
+  return initialLocale;
+}
+
 export function buildLocaleHref(
   pathname: string,
   locale: Locale,

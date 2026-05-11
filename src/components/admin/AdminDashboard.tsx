@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LogOut, Users, GraduationCap, Activity, Settings, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { hasProtectedApiBaseUrl } from '../../lib/apiBase';
-import { buildLocaleHref, getMessages, type Locale } from '../../lib/i18n';
+import { buildLocaleHref, getMessages, resolveRuntimeLocale, type Locale } from '../../lib/i18n';
 import StudentsTable from './StudentsTable';
 import TeachersTable from './TeachersTable';
 import AuditLog from './AuditLog';
@@ -13,12 +13,15 @@ type Tab = 'students' | 'teachers' | 'activity' | 'settings';
 type AuthState = 'checking' | 'allowed' | 'denied' | 'backend';
 
 export default function AdminDashboard({ locale }: { locale: Locale }) {
-  const m = getMessages(locale);
+  const [activeLocale, setActiveLocale] = useState<Locale>(() => resolveRuntimeLocale(locale));
+  const m = getMessages(activeLocale);
   const [activeTab, setActiveTab] = useState<Tab>('students');
   const [authState, setAuthState] = useState<AuthState>('checking');
 
   useEffect(() => {
     try {
+      setActiveLocale(resolveRuntimeLocale(locale));
+
       if (!hasProtectedApiBaseUrl()) {
         localStorage.removeItem('admin_token');
         setAuthState('backend');
@@ -28,7 +31,7 @@ export default function AdminDashboard({ locale }: { locale: Locale }) {
       const token = window.localStorage.getItem('admin_token');
       if (!token) {
         setAuthState('denied');
-        window.location.replace(buildLocaleHref('/admin', locale));
+        window.location.replace(buildLocaleHref('/admin', resolveRuntimeLocale(locale)));
         return;
       }
 
@@ -42,7 +45,7 @@ export default function AdminDashboard({ locale }: { locale: Locale }) {
       console.error('Admin dashboard auth bootstrap failed:', error);
       setAuthState('denied');
     }
-  }, []);
+  }, [locale]);
 
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
@@ -51,7 +54,7 @@ export default function AdminDashboard({ locale }: { locale: Locale }) {
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
-    window.location.href = buildLocaleHref('/admin', locale);
+    window.location.href = buildLocaleHref('/admin', activeLocale);
   };
 
   if (authState === 'checking') {
@@ -71,7 +74,7 @@ export default function AdminDashboard({ locale }: { locale: Locale }) {
             {m.admin.sessionRequiredHint}
           </p>
           <a
-            href={buildLocaleHref('/admin', locale)}
+            href={buildLocaleHref('/admin', activeLocale)}
             className="mt-5 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
           >
             {m.admin.goToLogin}
@@ -90,7 +93,7 @@ export default function AdminDashboard({ locale }: { locale: Locale }) {
             {m.admin.backendRequiredHint}
           </p>
           <a
-            href={buildLocaleHref('/admin', locale)}
+            href={buildLocaleHref('/admin', activeLocale)}
             className="mt-5 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
           >
             {m.admin.goToLogin}
@@ -123,7 +126,7 @@ export default function AdminDashboard({ locale }: { locale: Locale }) {
 
             <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <a 
-                href={buildLocaleHref('/', locale)} 
+                href={buildLocaleHref('/', activeLocale)} 
                 className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-1 transition-colors"
               >
                 {m.public.leaderboard} <ExternalLink className="w-4 h-4" />

@@ -3,24 +3,28 @@ import { motion } from 'framer-motion';
 import { Shield, LogIn } from 'lucide-react';
 import { apiJson } from '../../lib/apiClient';
 import { getProtectedApiConfigError, hasProtectedApiBaseUrl } from '../../lib/apiBase';
-import { buildLocaleHref, getMessages, type Locale } from '../../lib/i18n';
+import { buildLocaleHref, getMessages, resolveRuntimeLocale, type Locale } from '../../lib/i18n';
 
 export default function AdminLogin({ locale }: { locale: Locale }) {
-  const m = getMessages(locale);
+  const [activeLocale, setActiveLocale] = useState<Locale>(() => resolveRuntimeLocale(locale));
+  const m = getMessages(activeLocale);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setActiveLocale(resolveRuntimeLocale(locale));
+
     if (!hasProtectedApiBaseUrl()) {
       setError(getProtectedApiConfigError());
-      return;
+    } else {
+      setError('');
     }
 
     // Redirect if already logged in
     const token = localStorage.getItem('admin_token');
     if (token) {
-      window.location.href = buildLocaleHref('/admin/dashboard', locale);
+      window.location.href = buildLocaleHref('/admin/dashboard', resolveRuntimeLocale(locale));
     }
   }, [locale]);
 
@@ -37,7 +41,7 @@ export default function AdminLogin({ locale }: { locale: Locale }) {
       });
 
       localStorage.setItem('admin_token', data.token);
-      window.location.href = buildLocaleHref('/admin/dashboard', locale);
+      window.location.href = buildLocaleHref('/admin/dashboard', activeLocale);
     } catch (err) {
       setError(err instanceof Error ? err.message : m.admin.networkError);
     } finally {
@@ -103,7 +107,7 @@ export default function AdminLogin({ locale }: { locale: Locale }) {
         </form>
 
         <div className="mt-6 text-center">
-          <a href={buildLocaleHref('/', locale)} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+          <a href={buildLocaleHref('/', activeLocale)} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
             ← {m.public.backToLeaderboard}
           </a>
         </div>

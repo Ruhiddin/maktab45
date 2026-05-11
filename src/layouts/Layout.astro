@@ -67,6 +67,7 @@ const m = getMessages(currentLocale);
 					{SUPPORTED_LOCALES.map((supportedLocale) => (
 						<a
 							href={buildLocaleHref(Astro.url.pathname, supportedLocale, Astro.url.searchParams)}
+							data-locale-pill={supportedLocale}
 							aria-current={currentLocale === supportedLocale ? 'page' : undefined}
 							class:list={[
 								'site-locale-switcher__pill',
@@ -136,6 +137,26 @@ const m = getMessages(currentLocale);
 		</div>
 	</body>
 </html>
+
+<script is:inline>
+	(() => {
+		const params = new URLSearchParams(window.location.search);
+		const activeLocale = params.get('lang');
+		if (!activeLocale) return;
+
+		document.querySelectorAll('[data-locale-pill]').forEach((node) => {
+			const pill = node;
+			const isActive = pill.getAttribute('data-locale-pill') === activeLocale;
+			if (isActive) {
+				pill.setAttribute('aria-current', 'page');
+				pill.classList.add('site-locale-switcher__pill--active');
+			} else {
+				pill.removeAttribute('aria-current');
+				pill.classList.remove('site-locale-switcher__pill--active');
+			}
+		});
+	})();
+</script>
 
 <style is:global>
 	html,

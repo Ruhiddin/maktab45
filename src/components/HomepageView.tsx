@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Leaderboard from './Leaderboard';
 import { buildArchiveRankingData, type ArchiveSnapshot } from '../lib/archiveSnapshot';
-import { buildLocaleHref, getMessages, type Locale } from '../lib/i18n';
+import { buildLocaleHref, getMessages, resolveRuntimeLocale, type Locale } from '../lib/i18n';
 import { isPlaceholderMode, MOCK_QUALIFICATIONS, MOCK_RANKINGS, MOCK_ADMIN_SETTINGS } from '../lib/mockData';
 import { fetchPublicSettingsDirect } from '../lib/publicData';
 import { supabase } from '../lib/supabase';
@@ -51,7 +51,8 @@ export default function HomepageView({
   fallbackSchoolName,
   fallbackAcademicYear,
 }: Props) {
-  const m = getMessages(locale);
+  const [activeLocale, setActiveLocale] = useState<Locale>(() => resolveRuntimeLocale(locale));
+  const m = getMessages(activeLocale);
   const [selectedYear, setSelectedYear] = useState<string | null>(() => getSelectedArchiveYear(archiveYears));
   const [schoolName, setSchoolName] = useState(fallbackSchoolName);
   const [academicYear, setAcademicYear] = useState(fallbackAcademicYear);
@@ -60,13 +61,14 @@ export default function HomepageView({
 
   useEffect(() => {
     const syncFromLocation = () => {
+      setActiveLocale(resolveRuntimeLocale(locale));
       setSelectedYear(getSelectedArchiveYear(archiveYears));
     };
 
     syncFromLocation();
     window.addEventListener('popstate', syncFromLocation);
     return () => window.removeEventListener('popstate', syncFromLocation);
-  }, [archiveYears]);
+  }, [archiveYears, locale]);
 
   useEffect(() => {
     let cancelled = false;
@@ -173,7 +175,7 @@ export default function HomepageView({
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12">
       <div className="max-w-5xl mx-auto px-4 text-center mb-8">
-        <a href={buildLocaleHref('/access', locale)} className="inline-block group">
+        <a href={buildLocaleHref('/access', activeLocale)} className="inline-block group">
           <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 mb-4 tracking-tight transition-transform group-hover:scale-[1.01]">
             {schoolName}
           </h1>
@@ -198,7 +200,7 @@ export default function HomepageView({
       ) : (
         <Leaderboard
           initialData={leaderboardData}
-          locale={locale}
+          locale={activeLocale}
           selectedYear={selectedYear}
           enableHover={!selectedYear}
           currentAcademicYear={academicYear}

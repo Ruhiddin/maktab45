@@ -6,7 +6,7 @@ import { isPlaceholderMode, MOCK_RANKINGS } from '../lib/mockData';
 import { supabase } from '../lib/supabase';
 import { withBasePath } from '../lib/utils';
 import type { StudentRank } from '../types';
-import type { Locale } from '../lib/i18n';
+import { resolveRuntimeLocale, type Locale } from '../lib/i18n';
 
 type Props = {
   locale: Locale;
@@ -32,6 +32,7 @@ export default function ClassDetailView({
   archiveYears,
   currentAcademicYear,
 }: Props) {
+  const [activeLocale, setActiveLocale] = useState<Locale>(() => resolveRuntimeLocale(locale));
   const [selectedYear, setSelectedYear] = useState<string | null>(() => getSelectedArchiveYear(archiveYears));
   const [allStudents, setAllStudents] = useState<StudentRank[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,11 +46,14 @@ export default function ClassDetailView({
   }, [gradeSection]);
 
   useEffect(() => {
-    const syncFromLocation = () => setSelectedYear(getSelectedArchiveYear(archiveYears));
+    const syncFromLocation = () => {
+      setActiveLocale(resolveRuntimeLocale(locale));
+      setSelectedYear(getSelectedArchiveYear(archiveYears));
+    };
     syncFromLocation();
     window.addEventListener('popstate', syncFromLocation);
     return () => window.removeEventListener('popstate', syncFromLocation);
-  }, [archiveYears]);
+  }, [archiveYears, locale]);
 
   useEffect(() => {
     let cancelled = false;
@@ -105,7 +109,7 @@ export default function ClassDetailView({
       <div className="max-w-5xl mx-auto px-4 mb-6 flex justify-center">
         <ClientStudyYearPicker
           pathname={pathname}
-          locale={locale}
+          locale={activeLocale}
           currentAcademicYear={currentAcademicYear}
           archiveYears={archiveYears}
           selectedYear={selectedYear}

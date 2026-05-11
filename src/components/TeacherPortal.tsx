@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { type Locale } from '../lib/i18n';
+import { resolveRuntimeLocale, type Locale } from '../lib/i18n';
 import { hasProtectedApiBaseUrl } from '../lib/apiBase';
 import TeacherLogin from './TeacherLogin';
 import TeacherDashboard from './TeacherDashboard';
@@ -14,11 +14,14 @@ interface TeacherProfile {
 }
 
 export default function TeacherPortal({ locale }: { locale: Locale }) {
+  const [activeLocale, setActiveLocale] = useState<Locale>(() => resolveRuntimeLocale(locale));
   const [token, setToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<TeacherProfile | null>(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   useEffect(() => {
+    setActiveLocale(resolveRuntimeLocale(locale));
+
     if (!hasProtectedApiBaseUrl()) {
       localStorage.removeItem('teacher_token');
       localStorage.removeItem('teacher_profile');
@@ -36,7 +39,10 @@ export default function TeacherPortal({ locale }: { locale: Locale }) {
         console.error('Failed to parse teacher profile from localStorage');
       }
     }
-  }, []);
+    const syncLocale = () => setActiveLocale(resolveRuntimeLocale(locale));
+    window.addEventListener('popstate', syncLocale);
+    return () => window.removeEventListener('popstate', syncLocale);
+  }, [locale]);
 
   const handleLogin = (newToken: string, newProfile: TeacherProfile) => {
     setToken(newToken);
@@ -69,13 +75,13 @@ export default function TeacherPortal({ locale }: { locale: Locale }) {
   };
 
   if (!token || !profile) {
-    return <TeacherLogin locale={locale} onLogin={handleLogin} />;
+    return <TeacherLogin locale={activeLocale} onLogin={handleLogin} />;
   }
 
   return (
     <ToastProvider>
     <>
-      <TeacherDashboard locale={locale} token={token} profile={profile} onLogout={handleLogout} />
+      <TeacherDashboard locale={activeLocale} token={token} profile={profile} onLogout={handleLogout} />
       
       <ChangePasswordModal 
         isOpen={showPasswordModal}
