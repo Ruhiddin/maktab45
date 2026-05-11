@@ -16,7 +16,21 @@ type Props = {
 };
 
 function withRankDelta(students: StudentRank[], last7dByStudent: Map<string, number>) {
-  const current = [...students].sort((a, b) => b.total_score - a.total_score);
+  if (last7dByStudent.size === 0) {
+    return students.map((student) => ({ ...student, rank_delta: 0, trend: 'flat' as const }));
+  }
+
+  const compareStudents = (
+    left: Pick<StudentRank, 'total_score' | 'name' | 'student_id'>,
+    right: Pick<StudentRank, 'total_score' | 'name' | 'student_id'>
+  ) => {
+    if (right.total_score !== left.total_score) return right.total_score - left.total_score;
+    const byName = left.name.localeCompare(right.name);
+    if (byName !== 0) return byName;
+    return left.student_id.localeCompare(right.student_id);
+  };
+
+  const current = [...students].sort(compareStudents);
   const currentRank = new Map<string, number>();
   current.forEach((student, index) => currentRank.set(student.student_id, index + 1));
 
@@ -24,7 +38,16 @@ function withRankDelta(students: StudentRank[], last7dByStudent: Map<string, num
     id: student.student_id,
     score7: student.total_score - (last7dByStudent.get(student.student_id) ?? 0),
   }));
-  prior.sort((a, b) => (b.score7 - a.score7) || a.id.localeCompare(b.id));
+  prior.sort((a, b) => {
+    if (b.score7 !== a.score7) return b.score7 - a.score7;
+    const currentLeft = students.find((student) => student.student_id === a.id);
+    const currentRight = students.find((student) => student.student_id === b.id);
+    if (currentLeft && currentRight) {
+      const byName = currentLeft.name.localeCompare(currentRight.name);
+      if (byName !== 0) return byName;
+    }
+    return a.id.localeCompare(b.id);
+  });
 
   const priorRank = new Map<string, number>();
   prior.forEach((student, index) => priorRank.set(student.id, index + 1));
@@ -32,7 +55,7 @@ function withRankDelta(students: StudentRank[], last7dByStudent: Map<string, num
   return students.map((student) => {
     const now = currentRank.get(student.student_id) ?? 0;
     const ago = priorRank.get(student.student_id) ?? 0;
-    return { ...student, rank_delta: ago && now ? ago - now : 0 };
+    return { ...student, rank_delta: ago && now ? ago - now : 0, trend: 'flat' as const };
   });
 }
 
