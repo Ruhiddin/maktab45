@@ -3,6 +3,15 @@ import { twMerge } from "tailwind-merge"
 
 const BASE_URL = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '') || '';
 
+function stripBasePrefix(pathname: string) {
+  if (!BASE_URL || BASE_URL === '/') return pathname;
+  if (pathname === BASE_URL) return '/';
+  if (pathname.startsWith(`${BASE_URL}/`)) {
+    return pathname.slice(BASE_URL.length) || '/';
+  }
+  return pathname;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -11,7 +20,7 @@ export function withBasePath(pathname: string): string {
   if (!pathname) return BASE_URL || '/';
   if (/^(?:[a-z]+:)?\/\//i.test(pathname)) return pathname;
 
-  const normalizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  const normalizedPath = stripBasePrefix(pathname.startsWith('/') ? pathname : `/${pathname}`);
   if (!BASE_URL) return normalizedPath;
   if (normalizedPath === '/') return `${BASE_URL}/`;
   return `${BASE_URL}${normalizedPath}`;

@@ -5,6 +5,15 @@ export const DEFAULT_LOCALE: Locale = 'uz';
 export const LOCALE_COOKIE = 'site_lang';
 const BASE_URL = (import.meta.env.BASE_URL || '/').replace(/\/+$/, '') || '';
 
+function stripBasePrefix(pathname: string) {
+  if (!BASE_URL || BASE_URL === '/') return pathname;
+  if (pathname === BASE_URL) return '/';
+  if (pathname.startsWith(`${BASE_URL}/`)) {
+    return pathname.slice(BASE_URL.length) || '/';
+  }
+  return pathname;
+}
+
 export function isLocale(value: string | null | undefined): value is Locale {
   return Boolean(value && SUPPORTED_LOCALES.includes(value as Locale));
 }
@@ -21,7 +30,7 @@ export function buildLocaleHref(
   locale: Locale,
   searchParams?: URLSearchParams | string | null
 ): string {
-  const normalizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  const normalizedPath = stripBasePrefix(pathname.startsWith('/') ? pathname : `/${pathname}`);
   const params = new URLSearchParams(
     typeof searchParams === 'string'
       ? searchParams
