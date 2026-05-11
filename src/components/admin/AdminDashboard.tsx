@@ -191,11 +191,11 @@ export default function AdminDashboard({ locale }: { locale: Locale }) {
               aria-labelledby={`admin-tab-${activeTab}`}
             >
               {activeTab === 'students' && (
-                <StudentsTable />
+                <StudentsTable locale={activeLocale} />
               )}
               
               {activeTab === 'teachers' && (
-                <TeachersTable />
+                <TeachersTable locale={activeLocale} />
               )}
               
               {activeTab === 'activity' && (

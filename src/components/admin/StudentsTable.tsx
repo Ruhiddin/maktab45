@@ -5,6 +5,7 @@ import { normalizeErrorMessage } from '../../lib/clientErrors';
 import ExcelImporter from './ExcelImporter';
 import AdminTableSkeleton from './AdminTableSkeleton';
 import { useToast } from '../toast/ToastProvider';
+import { getMessages, resolveRuntimeLocale, type Locale } from '../../lib/i18n';
 
 export interface AdminStudent {
   id: string;
@@ -16,8 +17,10 @@ export interface AdminStudent {
   is_active: boolean;
 }
 
-export default function StudentsTable() {
+export default function StudentsTable({ locale }: { locale: Locale }) {
   const { showToast } = useToast();
+  const activeLocale = resolveRuntimeLocale(locale);
+  const m = getMessages(activeLocale);
   const [students, setStudents] = useState<AdminStudent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +100,7 @@ export default function StudentsTable() {
     } catch (err: any) {
       showToast({
         type: 'error',
-        title: 'Save failed',
+        title: m.admin.common.saveFailed,
         message: normalizeErrorMessage(err.message),
       });
     } finally {
@@ -106,7 +109,8 @@ export default function StudentsTable() {
   };
 
   const handleToggleStatus = async (student: AdminStudent) => {
-    if (!confirm(`Are you sure you want to ${student.is_active ? 'deactivate' : 'activate'} ${student.full_name}?`)) return;
+    const actionLabel = student.is_active ? m.admin.studentsTable.deactivate : m.admin.studentsTable.activate;
+    if (!confirm(m.admin.studentsTable.confirmStatus.replace('{action}', actionLabel).replace('{name}', student.full_name))) return;
     
     setSavingId(student.id);
     try {
@@ -123,7 +127,7 @@ export default function StudentsTable() {
     } catch (err: any) {
       showToast({
         type: 'error',
-        title: `${student.is_active ? 'Deactivate' : 'Activate'} failed`,
+        title: student.is_active ? m.admin.studentsTable.deactivateFailed : m.admin.studentsTable.activateFailed,
         message: normalizeErrorMessage(err.message),
       });
     } finally {
@@ -148,8 +152,10 @@ export default function StudentsTable() {
 
     showToast({
       type: 'success',
-      title: 'Import complete',
-      message: `${result.created || 0} students created, ${result.skipped || 0} skipped.`,
+      title: m.admin.common.importComplete,
+      message: m.admin.studentsTable.successMessage
+        .replace('{created}', String(result.created || 0))
+        .replace('{skipped}', String(result.skipped || 0)),
     });
     setIsImportOpen(false);
     fetchStudents();
@@ -205,7 +211,7 @@ export default function StudentsTable() {
       <div className="p-8 text-center text-red-500 flex flex-col items-center">
         <AlertCircle className="w-8 h-8 mb-2" />
         <p>{error}</p>
-        <button onClick={fetchStudents} className="mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg">Retry</button>
+        <button onClick={fetchStudents} className="mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg">{m.admin.common.retry}</button>
       </div>
     );
   }
@@ -221,7 +227,7 @@ export default function StudentsTable() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search students..."
+              placeholder={m.admin.studentsTable.searchPlaceholder}
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500"
@@ -233,8 +239,8 @@ export default function StudentsTable() {
             onChange={e => setGradeFilter(e.target.value)}
             className="px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100"
           >
-            <option value="all">All Grades</option>
-            {grades.map(g => <option key={g} value={g}>Grade {g}</option>)}
+            <option value="all">{m.admin.studentsTable.allGrades}</option>
+            {grades.map(g => <option key={g} value={g}>{m.admin.studentsTable.gradeOption.replace('{grade}', String(g))}</option>)}
           </select>
 
           <select 
@@ -242,9 +248,9 @@ export default function StudentsTable() {
             onChange={e => setStatusFilter(e.target.value as any)}
             className="px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100"
           >
-            <option value="all">All Status</option>
-            <option value="active">Active Only</option>
-            <option value="inactive">Inactive Only</option>
+            <option value="all">{m.admin.common.allStatus}</option>
+            <option value="active">{m.admin.common.activeOnly}</option>
+            <option value="inactive">{m.admin.common.inactiveOnly}</option>
           </select>
         </div>
 
@@ -253,7 +259,7 @@ export default function StudentsTable() {
           className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors"
         >
           <DownloadCloud className="w-4 h-4" />
-          Import Students
+          {m.admin.studentsTable.importButton}
         </button>
       </div>
 
@@ -271,7 +277,7 @@ export default function StudentsTable() {
                   role="button"
                   aria-sort={sortField === 'full_name' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
                 >
-                  Name {sortField === 'full_name' && (sortAsc ? '↑' : '↓')}
+                  {m.admin.common.name} {sortField === 'full_name' && (sortAsc ? '↑' : '↓')}
                 </th>
                 <th
                   className="px-6 py-4 font-medium cursor-pointer hover:text-indigo-600"
@@ -281,7 +287,7 @@ export default function StudentsTable() {
                   role="button"
                   aria-sort={sortField === 'grade' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
                 >
-                  Class {sortField === 'grade' && (sortAsc ? '↑' : '↓')}
+                  {m.admin.studentsTable.classLabel} {sortField === 'grade' && (sortAsc ? '↑' : '↓')}
                 </th>
                 <th
                   className="px-6 py-4 font-medium cursor-pointer hover:text-indigo-600"
@@ -291,7 +297,7 @@ export default function StudentsTable() {
                   role="button"
                   aria-sort={sortField === 'gender' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
                 >
-                  Gender {sortField === 'gender' && (sortAsc ? '↑' : '↓')}
+                  {m.admin.studentsTable.genderLabel} {sortField === 'gender' && (sortAsc ? '↑' : '↓')}
                 </th>
                 <th
                   className="px-6 py-4 font-medium cursor-pointer hover:text-indigo-600"
@@ -301,7 +307,7 @@ export default function StudentsTable() {
                   role="button"
                   aria-sort={sortField === 'total_score' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
                 >
-                  Score {sortField === 'total_score' && (sortAsc ? '↑' : '↓')}
+                  {m.admin.studentsTable.scoreLabel} {sortField === 'total_score' && (sortAsc ? '↑' : '↓')}
                 </th>
                 <th
                   className="px-6 py-4 font-medium cursor-pointer hover:text-indigo-600"
@@ -311,16 +317,16 @@ export default function StudentsTable() {
                   role="button"
                   aria-sort={sortField === 'is_active' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
                 >
-                  Status {sortField === 'is_active' && (sortAsc ? '↑' : '↓')}
+                  {m.admin.common.status} {sortField === 'is_active' && (sortAsc ? '↑' : '↓')}
                 </th>
-                <th className="px-6 py-4 font-medium text-right">Actions</th>
+                <th className="px-6 py-4 font-medium text-right">{m.admin.common.actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {filteredStudents.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                    {students.length === 0 ? 'No students yet.' : 'No students match the current filters.'}
+                    {students.length === 0 ? m.admin.studentsTable.noStudentsYet : m.admin.studentsTable.noStudentsFiltered}
                   </td>
                 </tr>
               ) : (
@@ -356,7 +362,7 @@ export default function StudentsTable() {
                             />
                             <input 
                               type="text" 
-                              placeholder="Sec"
+                              placeholder={m.admin.studentsTable.sectionPlaceholder}
                               value={editForm.section || ''} 
                               onChange={e => setEditForm({...editForm, section: e.target.value})}
                               className="w-16 px-2 py-1 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
@@ -375,11 +381,11 @@ export default function StudentsTable() {
                             onChange={e => setEditForm({...editForm, gender: e.target.value as 'male' | 'female'})}
                             className="px-2 py-1 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded text-gray-900 dark:text-gray-100"
                           >
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
+                            <option value="male">{m.public.male}</option>
+                            <option value="female">{m.public.female}</option>
                           </select>
                         ) : (
-                          student.gender
+                          student.gender === 'male' ? m.public.male : m.public.female
                         )}
                       </td>
                       <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
@@ -391,7 +397,7 @@ export default function StudentsTable() {
                             ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                             : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                         }`}>
-                          {student.is_active ? 'Active' : 'Inactive'}
+                          {student.is_active ? m.admin.common.active : m.admin.common.inactive}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
@@ -429,7 +435,7 @@ export default function StudentsTable() {
                                   ? 'text-red-500 hover:bg-red-50' 
                                   : 'text-green-500 hover:bg-green-50'
                               }`}
-                              title={student.is_active ? 'Deactivate' : 'Activate'}
+                              title={student.is_active ? m.admin.studentsTable.deactivate : m.admin.studentsTable.activate}
                             >
                               {student.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                             </button>
@@ -446,16 +452,21 @@ export default function StudentsTable() {
       </div>
 
       <ExcelImporter
-        title="Import Students"
-        description="Upload a CSV file to add new students in bulk."
+        title={m.admin.studentsTable.importTitle}
+        description={m.admin.studentsTable.importDescription}
+        locale={activeLocale}
         parseKind="students"
         isOpen={isImportOpen}
         onClose={() => setIsImportOpen(false)}
         expectedColumns={[
-          { key: 'full_name', label: 'Full Name', required: true },
-          { key: 'gender', label: 'Gender (male/female)', required: true },
-          { key: 'grade', label: 'Grade (1-11)', required: true },
-          { key: 'section', label: 'Section', required: false }
+          { key: 'full_name', label: m.admin.common.name, required: true },
+          { key: 'gender', label: `${m.admin.studentsTable.genderLabel} (${m.public.male}/${m.public.female})`, required: true },
+          { key: 'grade', label: `${m.admin.studentsTable.classLabel} (1-11)`, required: true },
+          { key: 'section', label: m.public.sectionSingle, required: false }
+        ]}
+        sampleRows={[
+          { full_name: 'Ali Valiev', gender: 'male', grade: '5', section: 'A' },
+          { full_name: 'Madina Karimova', gender: 'female', grade: '5', section: 'A' },
         ]}
         onImport={handleImport}
         onDownloadTemplate={handleDownloadTemplate}

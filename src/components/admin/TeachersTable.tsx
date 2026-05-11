@@ -5,6 +5,7 @@ import { normalizeErrorMessage } from '../../lib/clientErrors';
 import ExcelImporter from './ExcelImporter';
 import AdminTableSkeleton from './AdminTableSkeleton';
 import { useToast } from '../toast/ToastProvider';
+import { getMessages, resolveRuntimeLocale, type Locale } from '../../lib/i18n';
 
 export interface AdminTeacher {
   id: string;
@@ -16,8 +17,10 @@ export interface AdminTeacher {
   updated_at: string;
 }
 
-export default function TeachersTable() {
+export default function TeachersTable({ locale }: { locale: Locale }) {
   const { showToast } = useToast();
+  const activeLocale = resolveRuntimeLocale(locale);
+  const m = getMessages(activeLocale);
   const [teachers, setTeachers] = useState<AdminTeacher[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +111,7 @@ export default function TeachersTable() {
     } catch (err: any) {
       showToast({
         type: 'error',
-        title: 'Save failed',
+        title: m.admin.common.saveFailed,
         message: normalizeErrorMessage(err.message),
       });
     } finally {
@@ -117,7 +120,8 @@ export default function TeachersTable() {
   };
 
   const handleToggleStatus = async (teacher: AdminTeacher) => {
-    if (!confirm(`Are you sure you want to ${teacher.is_active ? 'deactivate' : 'activate'} ${teacher.full_name}?`)) return;
+    const actionLabel = teacher.is_active ? m.admin.teachersTable.deactivate : m.admin.teachersTable.activate;
+    if (!confirm(m.admin.teachersTable.confirmStatus.replace('{action}', actionLabel).replace('{name}', teacher.full_name))) return;
     
     setSavingId(teacher.id);
     try {
@@ -134,7 +138,7 @@ export default function TeachersTable() {
     } catch (err: any) {
       showToast({
         type: 'error',
-        title: `${teacher.is_active ? 'Deactivate' : 'Activate'} failed`,
+        title: teacher.is_active ? m.admin.teachersTable.deactivateFailed : m.admin.teachersTable.activateFailed,
         message: normalizeErrorMessage(err.message),
       });
     } finally {
@@ -143,14 +147,14 @@ export default function TeachersTable() {
   };
 
   const handleResetPassword = async (teacher: AdminTeacher) => {
-    const newPassword = prompt(`Enter new default password for ${teacher.full_name}:`);
+    const newPassword = prompt(m.admin.teachersTable.resetPasswordPrompt.replace('{name}', teacher.full_name));
     if (!newPassword) return;
 
     if (newPassword.length < 6) {
       showToast({
         type: 'error',
-        title: 'Password reset failed',
-        message: 'Password must be at least 6 characters.',
+        title: m.admin.teachersTable.resetPasswordTitle,
+        message: m.admin.teachersTable.passwordMinLength,
       });
       return;
     }
@@ -169,13 +173,13 @@ export default function TeachersTable() {
       setTeachers(prev => prev.map(t => t.id === teacher.id ? { ...t, is_password_changed: false } : t));
       showToast({
         type: 'success',
-        title: 'Password changed',
-        message: `${teacher.full_name}'s password was reset successfully.`,
+        title: m.admin.teachersTable.passwordChanged,
+        message: m.admin.teachersTable.passwordResetSuccess.replace('{name}', teacher.full_name),
       });
     } catch (err: any) {
       showToast({
         type: 'error',
-        title: 'Password reset failed',
+        title: m.admin.teachersTable.resetPasswordTitle,
         message: normalizeErrorMessage(err.message),
       });
     } finally {
@@ -193,8 +197,10 @@ export default function TeachersTable() {
     });
     showToast({
       type: 'success',
-      title: 'Import complete',
-      message: `${result.created || 0} teachers created, ${result.updated || 0} updated.`,
+      title: m.admin.common.importComplete,
+      message: m.admin.teachersTable.successMessage
+        .replace('{created}', String(result.created || 0))
+        .replace('{updated}', String(result.updated || 0)),
     });
     setIsImportOpen(false);
     fetchTeachers();
@@ -248,7 +254,7 @@ export default function TeachersTable() {
       <div className="p-8 text-center text-red-500 flex flex-col items-center">
         <AlertCircle className="w-8 h-8 mb-2" />
         <p>{error}</p>
-        <button onClick={fetchTeachers} className="mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg">Retry</button>
+        <button onClick={fetchTeachers} className="mt-4 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg">{m.admin.common.retry}</button>
       </div>
     );
   }
@@ -262,7 +268,7 @@ export default function TeachersTable() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search teachers..."
+              placeholder={m.admin.teachersTable.searchPlaceholder}
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500"
@@ -274,9 +280,9 @@ export default function TeachersTable() {
             onChange={e => setStatusFilter(e.target.value as any)}
             className="px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100"
           >
-            <option value="all">All Status</option>
-            <option value="active">Active Only</option>
-            <option value="inactive">Inactive Only</option>
+            <option value="all">{m.admin.common.allStatus}</option>
+            <option value="active">{m.admin.common.activeOnly}</option>
+            <option value="inactive">{m.admin.common.inactiveOnly}</option>
           </select>
         </div>
 
@@ -285,7 +291,7 @@ export default function TeachersTable() {
           className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors"
         >
           <DownloadCloud className="w-4 h-4" />
-          Import Teachers
+          {m.admin.teachersTable.importButton}
         </button>
       </div>
 
@@ -303,7 +309,7 @@ export default function TeachersTable() {
                   role="button"
                   aria-sort={sortField === 'full_name' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
                 >
-                  Name {sortField === 'full_name' && (sortAsc ? '↑' : '↓')}
+                  {m.admin.common.name} {sortField === 'full_name' && (sortAsc ? '↑' : '↓')}
                 </th>
                 <th
                   className="px-6 py-4 font-medium cursor-pointer hover:text-indigo-600"
@@ -313,7 +319,7 @@ export default function TeachersTable() {
                   role="button"
                   aria-sort={sortField === 'subjects' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
                 >
-                  Subjects
+                  {m.admin.teachersTable.subjectsLabel}
                 </th>
                 <th
                   className="px-6 py-4 font-medium cursor-pointer hover:text-indigo-600"
@@ -323,7 +329,7 @@ export default function TeachersTable() {
                   role="button"
                   aria-sort={sortField === 'is_password_changed' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
                 >
-                  Password Status {sortField === 'is_password_changed' && (sortAsc ? '↑' : '↓')}
+                  {m.admin.teachersTable.passwordStatus} {sortField === 'is_password_changed' && (sortAsc ? '↑' : '↓')}
                 </th>
                 <th
                   className="px-6 py-4 font-medium cursor-pointer hover:text-indigo-600"
@@ -333,16 +339,16 @@ export default function TeachersTable() {
                   role="button"
                   aria-sort={sortField === 'is_active' ? (sortAsc ? 'ascending' : 'descending') : 'none'}
                 >
-                  Status {sortField === 'is_active' && (sortAsc ? '↑' : '↓')}
+                  {m.admin.common.status} {sortField === 'is_active' && (sortAsc ? '↑' : '↓')}
                 </th>
-                <th className="px-6 py-4 font-medium text-right">Actions</th>
+                <th className="px-6 py-4 font-medium text-right">{m.admin.common.actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {filteredTeachers.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                    {teachers.length === 0 ? 'No teachers yet.' : 'No teachers match the current filters.'}
+                    {teachers.length === 0 ? m.admin.teachersTable.noTeachersYet : m.admin.teachersTable.noTeachersFiltered}
                   </td>
                 </tr>
               ) : (
@@ -373,7 +379,7 @@ export default function TeachersTable() {
                             value={Array.isArray(editForm.subjects) ? editForm.subjects.join(', ') : editForm.subjects || ''} 
                             onChange={e => setEditForm({...editForm, subjects: e.target.value as any})}
                             className="w-full px-2 py-1 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                            placeholder="Math, Science"
+                            placeholder={m.admin.teachersTable.subjectsPlaceholder}
                           />
                         ) : (
                           <div className="flex flex-wrap gap-1">
@@ -391,7 +397,7 @@ export default function TeachersTable() {
                             ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                             : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
                         }`}>
-                          {teacher.is_password_changed ? 'Changed' : 'Default'}
+                          {teacher.is_password_changed ? m.admin.teachersTable.changed : m.admin.teachersTable.default}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -400,7 +406,7 @@ export default function TeachersTable() {
                             ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                             : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                         }`}>
-                          {teacher.is_active ? 'Active' : 'Inactive'}
+                          {teacher.is_active ? m.admin.common.active : m.admin.common.inactive}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
@@ -427,7 +433,7 @@ export default function TeachersTable() {
                               onClick={() => handleResetPassword(teacher)}
                               disabled={isSaving}
                               className="p-1 text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded transition-colors"
-                              title="Reset Password"
+                              title={m.admin.teachersTable.resetPassword}
                             >
                               <KeyRound className="w-4 h-4" />
                             </button>
@@ -446,7 +452,7 @@ export default function TeachersTable() {
                                   ? 'text-red-500 hover:bg-red-50' 
                                   : 'text-green-500 hover:bg-green-50'
                               }`}
-                              title={teacher.is_active ? 'Deactivate' : 'Activate'}
+                              title={teacher.is_active ? m.admin.teachersTable.deactivate : m.admin.teachersTable.activate}
                             >
                               {teacher.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                             </button>
@@ -463,15 +469,20 @@ export default function TeachersTable() {
       </div>
 
       <ExcelImporter
-        title="Import Teachers"
-        description="Upload a CSV file to add or update teachers."
+        title={m.admin.teachersTable.importTitle}
+        description={m.admin.teachersTable.importDescription}
+        locale={activeLocale}
         parseKind="teachers"
         isOpen={isImportOpen}
         onClose={() => setIsImportOpen(false)}
         expectedColumns={[
-          { key: 'full_name', label: 'Full Name', required: true },
-          { key: 'subjects', label: 'Subjects (comma-separated)', required: false },
-          { key: 'default_password', label: 'Default Password', required: true }
+          { key: 'full_name', label: m.admin.common.name, required: true },
+          { key: 'subjects', label: m.admin.teachersTable.subjectsLabel, required: false },
+          { key: 'default_password', label: m.admin.teachersTable.defaultPassword, required: true }
+        ]}
+        sampleRows={[
+          { full_name: 'Gulnora Karimova', subjects: 'Math, Algebra', default_password: 'Teacher123' },
+          { full_name: 'Dilbar Alieva', subjects: 'Literature, Language', default_password: 'Teacher123' },
         ]}
         onImport={handleImport}
         onDownloadTemplate={handleDownloadTemplate}

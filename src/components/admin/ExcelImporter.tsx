@@ -5,6 +5,7 @@ import * as XLSX from 'xlsx';
 import { apiJson } from '../../lib/apiClient';
 import { normalizeImportErrorMessage } from '../../lib/clientErrors';
 import { useToast } from '../toast/ToastProvider';
+import { getMessages, resolveRuntimeLocale, type Locale } from '../../lib/i18n';
 
 export interface ColumnDef {
   key: string;
@@ -16,11 +17,13 @@ export interface ExcelImporterProps {
   title: string;
   description?: string;
   expectedColumns: ColumnDef[];
+  sampleRows?: Record<string, string>[];
   onImport: (data: any[]) => Promise<void>;
   onDownloadTemplate: () => void;
   parseKind: 'students' | 'teachers';
   isOpen: boolean;
   onClose: () => void;
+  locale: Locale;
 }
 
 function isSpreadsheetFile(file: File) {
@@ -59,13 +62,17 @@ export default function ExcelImporter({
   title,
   description,
   expectedColumns,
+  sampleRows = [],
   onImport,
   onDownloadTemplate,
   parseKind,
   isOpen,
-  onClose
+  onClose,
+  locale,
 }: ExcelImporterProps) {
   const { showToast } = useToast();
+  const activeLocale = resolveRuntimeLocale(locale);
+  const m = getMessages(activeLocale);
   const [parsedData, setParsedData] = useState<any[] | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -146,7 +153,7 @@ export default function ExcelImporter({
       setError(message);
       showToast({
         type: 'error',
-        title: 'Import failed',
+        title: m.admin.common.importFailed,
         message,
       });
     } finally {
@@ -183,7 +190,7 @@ export default function ExcelImporter({
           </div>
           <button
             onClick={() => { resetState(); onClose(); }}
-            aria-label="Close import dialog"
+            aria-label={m.admin.importer.close}
             className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -202,16 +209,16 @@ export default function ExcelImporter({
               <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
                 <Upload className="w-8 h-8 text-blue-500 dark:text-blue-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Click or drag file to upload</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{m.admin.importer.uploadTitle}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mb-6">
-                Supported formats: .xlsx, .xls, .csv. Excel files are converted automatically before upload. Keep the first header row unchanged.
+                {m.admin.importer.uploadDescription}
               </p>
 
               <input
                 type="file"
                 ref={fileInputRef}
                 className="hidden"
-                aria-label="Upload spreadsheet file"
+                aria-label={m.admin.importer.uploadTitle}
                 accept=".csv,text/csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                 onChange={handleFileUpload}
               />
@@ -225,15 +232,45 @@ export default function ExcelImporter({
                 className="flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
               >
                 <Download className="w-4 h-4" />
-                Download Template
+                {m.admin.importer.downloadTemplate}
               </button>
+
+              {sampleRows.length > 0 && (
+                <div className="mt-8 w-full max-w-2xl rounded-2xl border border-gray-200 bg-white/70 p-4 text-left shadow-sm dark:border-gray-700 dark:bg-gray-900/60">
+                  <p className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">{m.admin.importer.sampleHeader}</p>
+                  <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                    <table className="w-full text-xs whitespace-nowrap">
+                      <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                        <tr>
+                          {expectedColumns.map((col) => (
+                            <th key={col.key} className="px-3 py-2 font-medium">
+                              {col.key}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800 text-gray-700 dark:text-gray-200">
+                        {sampleRows.map((row, index) => (
+                          <tr key={index}>
+                            {expectedColumns.map((col) => (
+                              <td key={col.key} className="px-3 py-2">
+                                {row[col.key] ?? ''}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {isProcessing && (
             <div className="flex flex-col items-center justify-center py-20">
               <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4" />
-              <p className="text-gray-600 dark:text-gray-400">Processing file...</p>
+              <p className="text-gray-600 dark:text-gray-400">{m.admin.importer.processing}</p>
             </div>
           )}
 
@@ -241,12 +278,12 @@ export default function ExcelImporter({
             <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h4 className="text-sm font-semibold text-red-800 dark:text-red-300">Import Error</h4>
+                <h4 className="text-sm font-semibold text-red-800 dark:text-red-300">{m.admin.importer.importError}</h4>
                 <p className="text-sm text-red-600 dark:text-red-400 mt-1">{error}</p>
               </div>
               {parsedData && (
                 <button onClick={resetState} className="text-sm text-red-600 hover:underline">
-                  Try Again
+                  {m.admin.importer.tryAgain}
                 </button>
               )}
             </div>
@@ -261,14 +298,14 @@ export default function ExcelImporter({
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">{fileName}</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{parsedData.length} rows detected</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{m.admin.importer.rowsDetected.replace('{count}', String(parsedData.length))}</p>
                   </div>
                 </div>
                 <button
                   onClick={resetState}
-                  aria-label="Remove uploaded file"
+                  aria-label={m.admin.importer.removeFile}
                   className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                  title="Remove file"
+                  title={m.admin.importer.removeFile}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -278,8 +315,8 @@ export default function ExcelImporter({
                 <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20 px-4 py-3 flex items-center gap-3">
                   <div className="w-5 h-5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-blue-900 dark:text-blue-200">Import in progress</p>
-                    <p className="text-xs text-blue-700 dark:text-blue-300">Please wait while the spreadsheet rows are being validated and saved.</p>
+                    <p className="text-sm font-medium text-blue-900 dark:text-blue-200">{m.admin.importer.importInProgress}</p>
+                    <p className="text-xs text-blue-700 dark:text-blue-300">{m.admin.importer.importInProgressHint}</p>
                   </div>
                 </div>
               )}
@@ -289,7 +326,7 @@ export default function ExcelImporter({
                   <table className="w-full text-sm text-left whitespace-nowrap">
                     <thead className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 sticky top-0 z-10 shadow-sm">
                       <tr>
-                        <th className="px-4 py-3 font-medium">Status</th>
+                        <th className="px-4 py-3 font-medium">{m.admin.importer.previewStatus}</th>
                         {expectedColumns.map((col) => (
                           <th key={col.key} className="px-4 py-3 font-medium">
                             {col.label} {col.required && <span className="text-red-500">*</span>}
@@ -328,7 +365,7 @@ export default function ExcelImporter({
                 </div>
                 {parsedData.length > 100 && (
                   <div className="p-3 text-center text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                    Showing first 100 rows.
+                    {m.admin.importer.showingFirstHundred}
                   </div>
                 )}
               </div>
@@ -343,7 +380,7 @@ export default function ExcelImporter({
             disabled={isImporting}
             className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors"
           >
-            Cancel
+            {m.admin.common.cancel}
           </button>
           <button
             onClick={handleConfirmImport}
@@ -353,10 +390,10 @@ export default function ExcelImporter({
             {isImporting ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Importing...
+                {m.admin.importer.importing}
               </>
             ) : (
-              'Confirm Import'
+              m.admin.importer.confirmImport
             )}
           </button>
         </div>
