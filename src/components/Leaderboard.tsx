@@ -37,6 +37,7 @@ export default function Leaderboard({
   onRefresh = () => {},
 }: LeaderboardProps) {
   const m = getMessages(locale);
+  const [classFilter, setClassFilter] = useState<string | 'All'>('All');
   const [gradeFilter, setGradeFilter] = useState<number | 'All'>('All');
   const [sectionFilter, setSectionFilter] = useState<string | 'All'>('All');
   const [genderFilter, setGenderFilter] = useState<Gender | 'All'>('All');
@@ -85,6 +86,26 @@ export default function Leaderboard({
     }
   }, []);
 
+  const availableClasses = useMemo(() => {
+    const map = new Map<string, { label: string; grade: number; section: string }>();
+    for (const student of initialData) {
+      const section = student.section?.trim();
+      if (!section) continue;
+      const normalizedSection = section.toUpperCase();
+      const key = `${student.grade}::${normalizedSection}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          label: formatGradeSection(student.grade, normalizedSection),
+          grade: student.grade,
+          section: normalizedSection,
+        });
+      }
+    }
+    return Array.from(map.values()).sort((a, b) =>
+      a.grade - b.grade || a.section.localeCompare(b.section)
+    );
+  }, [initialData]);
+
   const availableSections = useMemo(() => {
     if (gradeFilter === 'All') return [];
     const set = new Set<string>();
@@ -98,6 +119,14 @@ export default function Leaderboard({
 
   const filteredData = useMemo(() => {
     let data = [...initialData];
+    if (classFilter !== 'All') {
+      const [classGrade, classSection] = classFilter.split('::');
+      data = data.filter(
+        (student) =>
+          String(student.grade) === classGrade &&
+          (student.section ?? '').trim().toUpperCase() === (classSection ?? '').toUpperCase()
+      );
+    }
     if (gradeFilter !== 'All') data = data.filter(s => s.grade === gradeFilter);
     if (gradeFilter !== 'All' && sectionFilter !== 'All') {
       data = data.filter(s => (s.section ?? '').toUpperCase() === sectionFilter.toUpperCase());
@@ -118,7 +147,7 @@ export default function Leaderboard({
       return 0;
     });
     return data;
-  }, [initialData, gradeFilter, sectionFilter, genderFilter, categoryFilter, debouncedSearch]);
+  }, [initialData, classFilter, gradeFilter, sectionFilter, genderFilter, categoryFilter, debouncedSearch]);
   const deferredFilteredData = useDeferredValue(filteredData);
   const isFilterSettling = deferredFilteredData !== filteredData;
 
@@ -207,6 +236,7 @@ export default function Leaderboard({
       <FilterBar
         locale={locale}
         gradeFilter={gradeFilter}
+        classFilter={classFilter}
         sectionFilter={sectionFilter}
         genderFilter={genderFilter}
         categoryFilter={categoryFilter}
@@ -217,14 +247,31 @@ export default function Leaderboard({
         selectedYear={selectedYear}
         lastRefreshedAt={lastRefreshedAt}
         refreshing={refreshing}
+        availableClasses={availableClasses}
         availableSections={availableSections}
         showMyClass={hasTeacherSession}
         myClassEnabled={myClassEnabled}
+        onChangeClass={(nextClass) => {
+          setClassFilter(nextClass);
+          if (nextClass === 'All') {
+            setGradeFilter('All');
+            setSectionFilter('All');
+            return;
+          }
+
+          const [nextGrade, nextSection] = nextClass.split('::');
+          setGradeFilter(Number(nextGrade));
+          setSectionFilter(nextSection || 'All');
+        }}
         onChangeGrade={(g) => {
+          setClassFilter('All');
           setGradeFilter(g);
           setSectionFilter('All');
         }}
-        onChangeSection={(s) => setSectionFilter(s)}
+        onChangeSection={(s) => {
+          setClassFilter('All');
+          setSectionFilter(s);
+        }}
         onChangeGender={setGenderFilter}
         onChangeCategory={setCategoryFilter}
         onChangeSearch={setSearch}
@@ -235,6 +282,7 @@ export default function Leaderboard({
             const g = localStorage.getItem('teacher_my_class_grade');
             const s = localStorage.getItem('teacher_my_class_section');
             if (!g) return;
+            setClassFilter(s && s.trim().length > 0 ? `${g}::${s.trim().toUpperCase()}` : 'All');
             setGradeFilter(Number(g));
             setSectionFilter(s && s.trim().length > 0 ? s.trim().toUpperCase() : 'All');
           } catch {

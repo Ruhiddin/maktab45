@@ -56,14 +56,14 @@ export default function ClientStudyYearPicker({
         {m.public.studyYear}
       </p>
       <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{m.public.studyYearHint}</p>
-      <div className="mt-3 flex flex-wrap justify-center gap-2">
+      <div className="mt-3 flex flex-nowrap justify-start gap-2 overflow-x-auto">
         {options.map((option) => (
           <a
             key={option.label}
             href={option.href}
             aria-current={option.active ? 'page' : undefined}
             className={[
-              'rounded-xl px-3 py-2 text-sm font-medium transition-colors',
+              'shrink-0 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-colors',
               option.active
                 ? 'bg-indigo-500 text-white shadow-sm'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-900/70 dark:text-gray-200 dark:hover:bg-slate-800',

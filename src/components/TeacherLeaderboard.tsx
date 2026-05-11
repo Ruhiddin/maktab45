@@ -124,7 +124,7 @@ export default function TeacherLeaderboard({
   return (
     <div className="mt-8">
       <div className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-4 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
           <div className="min-w-0 lg:mr-auto">
             <div className="flex items-center gap-3">
               <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/15 text-indigo-200">
@@ -137,20 +137,20 @@ export default function TeacherLeaderboard({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-1 rounded-2xl border border-white/10 bg-black/20 p-1 sm:rounded-full lg:justify-end">
+          <div className="flex min-w-0 flex-nowrap items-center justify-start gap-1 overflow-x-auto rounded-2xl border border-white/10 bg-black/20 p-1 sm:rounded-full xl:justify-end">
             <a
               href={buildLocaleHref('/', locale, selectedYear ? `year=${selectedYear}` : null)}
-              className="rounded-full px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:bg-white/10"
+              className="shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:bg-white/10"
             >
               {m.public.studentLeaderboard}
             </a>
-            <span className="rounded-full bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm">
+            <span className="shrink-0 whitespace-nowrap rounded-full bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm">
               {m.public.teacherLeaderboard}
             </span>
           </div>
 
           {yearOptions.length > 0 ? (
-            <div className="flex flex-wrap items-center justify-center gap-1 rounded-2xl border border-white/10 bg-black/20 p-1 sm:rounded-full lg:justify-end">
+            <div className="flex min-w-0 flex-nowrap items-center justify-start gap-1 overflow-x-auto rounded-2xl border border-white/10 bg-black/20 p-1 sm:rounded-full xl:justify-end">
               {yearOptions.map((option) => {
                 const isActive = (selectedYear ?? null) === option.year;
                 return (
@@ -159,7 +159,7 @@ export default function TeacherLeaderboard({
                     type="button"
                     onClick={() => navigateToYear(option.year)}
                     className={cn(
-                      'rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
+                      'shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors',
                       isActive
                         ? 'bg-indigo-500 text-white shadow-sm'
                         : 'text-slate-300 hover:bg-white/10'

@@ -26,7 +26,7 @@ export default function TeacherPodium({
   if (!top3.length) return null;
 
   return (
-    <div className="flex flex-wrap items-start justify-center gap-4 pt-14 pb-10 sm:gap-5 md:items-end md:gap-8 md:pt-22">
+    <div className="flex flex-wrap items-start justify-center gap-5 pt-14 pb-10 sm:gap-6 md:items-end md:gap-10 md:pt-22">
       {top3[1] ? (
         <TeacherPodiumCard
           teacher={top3[1]}
@@ -95,9 +95,9 @@ function TeacherPodiumCard({
   };
 
   const layoutOrder: Record<1 | 2 | 3, string> = {
-    1: 'order-1 basis-full max-w-[240px] sm:max-w-[260px] md:order-2 md:basis-auto md:max-w-[220px] md:scale-[1.04]',
-    2: 'order-2 basis-[calc(50%-0.5rem)] max-w-[180px] sm:max-w-[200px] md:order-1 md:basis-auto',
-    3: 'order-3 basis-[calc(50%-0.5rem)] max-w-[180px] sm:max-w-[200px] md:order-3 md:basis-auto',
+    1: 'order-1 basis-full max-w-[280px] sm:max-w-[310px] md:order-2 md:basis-auto md:max-w-[280px] md:scale-[1.04] lg:max-w-[300px]',
+    2: 'order-2 basis-[calc(50%-0.625rem)] max-w-[220px] sm:max-w-[250px] md:order-1 md:basis-auto md:max-w-[250px] lg:max-w-[270px]',
+    3: 'order-3 basis-[calc(50%-0.625rem)] max-w-[220px] sm:max-w-[250px] md:order-3 md:basis-auto md:max-w-[250px] lg:max-w-[270px]',
   };
 
   return (

@@ -8,6 +8,7 @@ type ViewMode = 'list' | 'cards';
 
 type Props = {
   locale: Locale;
+  classFilter: string | 'All';
   gradeFilter: number | 'All';
   sectionFilter: string | 'All';
   genderFilter: Gender | 'All';
@@ -20,10 +21,12 @@ type Props = {
   lastRefreshedAt?: string | null;
   refreshing?: boolean;
 
+  availableClasses: Array<{ label: string; grade: number; section: string }>;
   availableSections: string[];
   showMyClass: boolean;
   myClassEnabled: boolean;
 
+  onChangeClass: (value: string | 'All') => void;
   onChangeGrade: (grade: number | 'All') => void;
   onChangeSection: (section: string | 'All') => void;
   onChangeGender: (gender: Gender | 'All') => void;
@@ -36,6 +39,7 @@ type Props = {
 
 export default function FilterBar({
   locale,
+  classFilter,
   gradeFilter,
   sectionFilter,
   genderFilter,
@@ -47,9 +51,11 @@ export default function FilterBar({
   selectedYear = null,
   lastRefreshedAt = null,
   refreshing = false,
+  availableClasses,
   availableSections,
   showMyClass,
   myClassEnabled,
+  onChangeClass,
   onChangeGrade,
   onChangeSection,
   onChangeGender,
@@ -162,6 +168,20 @@ export default function FilterBar({
       </div>
 
       <div className="flex flex-wrap gap-2 w-full">
+        <select
+          aria-label={`${m.public.gradeSingle} ${m.public.sectionSingle}`}
+          className="p-2 rounded-lg bg-white/50 dark:bg-black/50 border border-gray-200 dark:border-gray-700 outline-none flex-1 sm:flex-none text-sm text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-400/60"
+          value={classFilter}
+          onChange={(e) => onChangeClass(e.target.value as string | 'All')}
+        >
+          <option value="All">{`${m.public.allGrades} / ${m.public.allSections}`}</option>
+          {availableClasses.map((entry) => (
+            <option key={`${entry.grade}::${entry.section}`} value={`${entry.grade}::${entry.section}`}>
+              {entry.label}
+            </option>
+          ))}
+        </select>
+
         <select
           aria-label="Filter by grade"
           className="p-2 rounded-lg bg-white/50 dark:bg-black/50 border border-gray-200 dark:border-gray-700 outline-none flex-1 sm:flex-none text-sm text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-400/60"
