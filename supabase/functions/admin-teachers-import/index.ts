@@ -77,6 +77,11 @@ Deno.serve(async (request) => {
   }
 
   const existingTeachers = existingData ?? [];
+  const existingTeachersByName = new Map(
+    existingTeachers.map((teacher) => [teacher.full_name, teacher] as const)
+  );
+  const newlyImportedTeacherNames = new Set<string>();
+  const passwordHashCache = new Map<string, string>();
   let created = 0;
   let updated = 0;
   const errors: string[] = [];
@@ -102,9 +107,19 @@ Deno.serve(async (request) => {
     }
 
     const subjects = getTeacherSubjects(rawRow.subjects);
-    const passwordHash = await hashPassword(defaultPassword);
-    const existingTeacher = existingTeachers.find((teacher) => teacher.full_name === fullName);
+    let passwordHash = passwordHashCache.get(defaultPassword);
+    if (!passwordHash) {
+      passwordHash = await hashPassword(defaultPassword);
+      passwordHashCache.set(defaultPassword, passwordHash);
+    }
+
+    const existingTeacher = existingTeachersByName.get(fullName);
     const updatedAt = new Date().toISOString();
+
+    if (!existingTeacher && newlyImportedTeacherNames.has(fullName)) {
+      errors.push(`Duplicate full_name in import file: ${describeTeacherImportRow(rawRow, index)}`);
+      continue;
+    }
 
     if (existingTeacher) {
       const { error: updateError } = await serviceClient
@@ -141,6 +156,7 @@ Deno.serve(async (request) => {
     }
 
     created += 1;
+    newlyImportedTeacherNames.add(fullName);
   }
 
   if (created > 0 || updated > 0) {
