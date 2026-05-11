@@ -9,8 +9,22 @@ export const MIN_PASSWORD_LENGTH = 6;
 const JWT_SECRET = new TextEncoder().encode(getJwtSecret());
 
 const ROLE_ROUTE_SCOPES: Record<AuthRole, string[]> = {
-  admin: ['/functions/v1/admin-', '/functions/v1/admin/', '/functions/v1/auth-admin-'],
-  teacher: ['/functions/v1/qualifications', '/functions/v1/teacher-', '/functions/v1/auth-teacher-'],
+  admin: [
+    '/admin-',
+    '/admin/',
+    '/auth-admin-',
+    '/functions/v1/admin-',
+    '/functions/v1/admin/',
+    '/functions/v1/auth-admin-',
+  ],
+  teacher: [
+    '/qualifications',
+    '/teacher-',
+    '/auth-teacher-',
+    '/functions/v1/qualifications',
+    '/functions/v1/teacher-',
+    '/functions/v1/auth-teacher-',
+  ],
 };
 
 export async function createToken(payload: { role: AuthRole; teacher_id?: string }): Promise<string> {
