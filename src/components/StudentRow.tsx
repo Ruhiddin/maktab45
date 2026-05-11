@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { buildStudentHref, buildYearHref, cn, formatGradeSection } from '../lib/utils';
+import { buildClassHref, buildStudentHref, cn, formatGradeSection } from '../lib/utils';
 import type { Category, StudentRank } from '../types';
 import BadgePill from './BadgePill';
 import RankDeltaChip from './RankDeltaChip';
@@ -171,7 +171,7 @@ export default function StudentRow({
 
       <div className="flex items-center gap-3 sm:contents ml-auto">
         <a
-          href={buildYearHref(`/class/${formatGradeSection(student.grade, student.section)}`, selectedYear)}
+          href={buildClassHref(formatGradeSection(student.grade, student.section), selectedYear)}
           onClick={(e) => e.stopPropagation()}
           className="sm:col-span-2 text-center text-xs sm:text-base text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
         >

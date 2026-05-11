@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
 import type { Category, StudentRank } from '../types';
-import { buildStudentHref, buildYearHref, cn, formatGradeSection } from '../lib/utils';
+import { buildClassHref, buildStudentHref, cn, formatGradeSection } from '../lib/utils';
 import CategoryMiniBar from './CategoryMiniBar';
 
 type Props = {
@@ -127,7 +127,7 @@ function PodiumCard({ student, rank, category, selectedYear }: { student: Studen
 
       <h3 className="font-bold text-white text-center text-lg leading-tight mb-1 line-clamp-2">{student.name}</h3>
       <a
-        href={buildYearHref(`/class/${formatGradeSection(student.grade, student.section)}`, selectedYear)}
+        href={buildClassHref(formatGradeSection(student.grade, student.section), selectedYear)}
         onClick={(e) => e.stopPropagation()}
         className="text-white/80 hover:text-white text-sm mb-3 transition-colors"
       >

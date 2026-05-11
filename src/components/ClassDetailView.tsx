@@ -11,7 +11,7 @@ import { resolveRuntimeLocale, type Locale } from '../lib/i18n';
 type Props = {
   locale: Locale;
   pathname: string;
-  gradeSection: string;
+  gradeSection?: string | null;
   archiveYears: number[];
   currentAcademicYear: string;
 };
@@ -34,32 +34,49 @@ export default function ClassDetailView({
 }: Props) {
   const [activeLocale, setActiveLocale] = useState<Locale>(() => resolveRuntimeLocale(locale));
   const [selectedYear, setSelectedYear] = useState<string | null>(() => getSelectedArchiveYear(archiveYears));
+  const [activeGradeSection, setActiveGradeSection] = useState<string | null>(() => {
+    if (typeof window === 'undefined') {
+      return gradeSection ?? null;
+    }
+
+    return new URLSearchParams(window.location.search).get('grade') || gradeSection || null;
+  });
   const [allStudents, setAllStudents] = useState<StudentRank[]>([]);
   const [loading, setLoading] = useState(true);
 
   const { gradeNum, section } = useMemo(() => {
-    const parts = gradeSection.split('-');
+    const value = activeGradeSection || '';
+    const parts = value.split('-');
     return {
       gradeNum: Number(parts[0]),
       section: parts.length > 1 ? parts[1] : null,
     };
-  }, [gradeSection]);
+  }, [activeGradeSection]);
 
   useEffect(() => {
     const syncFromLocation = () => {
       setActiveLocale(resolveRuntimeLocale(locale));
       setSelectedYear(getSelectedArchiveYear(archiveYears));
+      setActiveGradeSection(new URLSearchParams(window.location.search).get('grade') || gradeSection || null);
     };
     syncFromLocation();
     window.addEventListener('popstate', syncFromLocation);
     return () => window.removeEventListener('popstate', syncFromLocation);
-  }, [archiveYears, locale]);
+  }, [archiveYears, gradeSection, locale]);
 
   useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
       setLoading(true);
+
+      if (!activeGradeSection || !Number.isFinite(gradeNum) || gradeNum < 1) {
+        if (!cancelled) {
+          setAllStudents([]);
+          setLoading(false);
+        }
+        return;
+      }
 
       if (selectedYear) {
         try {
@@ -97,7 +114,7 @@ export default function ClassDetailView({
     return () => {
       cancelled = true;
     };
-  }, [selectedYear]);
+  }, [activeGradeSection, gradeNum, selectedYear]);
 
   const gradeStudents = useMemo(
     () => allStudents.filter((student) => student.grade === gradeNum && (!section || student.section === section)),

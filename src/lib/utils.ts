@@ -49,3 +49,11 @@ export function buildStudentHref(studentId: string, selectedYear?: string | null
   }
   return `${withBasePath('/student')}?${params.toString()}`;
 }
+
+export function buildClassHref(gradeSection: string, selectedYear?: string | null): string {
+  const params = new URLSearchParams({ grade: gradeSection });
+  if (selectedYear) {
+    params.set('year', selectedYear);
+  }
+  return `${withBasePath('/class')}?${params.toString()}`;
+}
