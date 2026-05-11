@@ -4,7 +4,7 @@ import ClientStudyYearPicker from './ClientStudyYearPicker';
 import { buildArchiveRankingData, normalizeArchiveQualification, normalizeArchiveStudent, type ArchiveSnapshot } from '../lib/archiveSnapshot';
 import { isPlaceholderMode, MOCK_QUALIFICATIONS, MOCK_RANKINGS, MOCK_STUDENTS } from '../lib/mockData';
 import { supabase } from '../lib/supabase';
-import { buildYearHref } from '../lib/utils';
+import { buildYearHref, withBasePath } from '../lib/utils';
 import { getMessages, type Locale } from '../lib/i18n';
 import type { Qualification, StudentDetail as StudentDetailType, StudentRank } from '../types';
 
@@ -55,7 +55,7 @@ export default function StudentDetailView({
 
       if (selectedYear) {
         try {
-          const response = await fetch(`/archives/${selectedYear}_archive.json`);
+          const response = await fetch(withBasePath(`/archives/${selectedYear}_archive.json`));
           const archive = response.ok ? ((await response.json()) as ArchiveSnapshot) : null;
           const archiveStudents = (archive?.students ?? []).map(normalizeArchiveStudent);
           const archiveQualifications = (archive?.qualifications ?? []).map(normalizeArchiveQualification);

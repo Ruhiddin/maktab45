@@ -1,6 +1,7 @@
 ---
 import { getFallbackPublicSettings } from '../lib/publicSettings';
 import { buildLocaleHref, getMessages, resolveLocale, type Locale, SUPPORTED_LOCALES } from '../lib/i18n';
+import { withBasePath } from '../lib/utils';
 
 interface Props {
 	title: string;
@@ -25,8 +26,8 @@ const m = getMessages(currentLocale);
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" type="image/svg+xml" href={withBasePath('/favicon.svg')} />
+		<link rel="icon" href={withBasePath('/favicon.ico')} />
 
 		<!-- SEO -->
 		<title>{pageTitle}</title>
@@ -96,7 +97,7 @@ const m = getMessages(currentLocale);
 						<article class="site-footer__brand-card">
 							<div class="site-footer__brand-head">
 								<div class="site-footer__logo-ring">
-									<img src="/bitherd-logo.png" alt="BITHERD logo" class="site-footer__logo" loading="lazy" />
+									<img src={withBasePath('/bitherd-logo.png')} alt="BITHERD logo" class="site-footer__logo" loading="lazy" />
 								</div>
 								<div>
 									<h3>BITHERD</h3>
@@ -112,7 +113,7 @@ const m = getMessages(currentLocale);
 						<article class="site-footer__brand-card">
 							<div class="site-footer__brand-head">
 								<div class="site-footer__logo-ring">
-									<img src="/sitora-logo.png" alt="Sitora logo" class="site-footer__logo" loading="lazy" />
+									<img src={withBasePath('/sitora-logo.png')} alt="Sitora logo" class="site-footer__logo" loading="lazy" />
 								</div>
 								<div>
 									<h3>Sitora</h3>

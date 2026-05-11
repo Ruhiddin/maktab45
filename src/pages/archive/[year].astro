@@ -1,5 +1,7 @@
 ---
 import { listArchiveYears } from '../../lib/archiveData';
+import { buildLocaleHref, resolveLocale } from '../../lib/i18n';
+import { withBasePath } from '../../lib/utils';
 
 export async function getStaticPaths() {
   return listArchiveYears().map((year) => ({
@@ -8,5 +10,10 @@ export async function getStaticPaths() {
 }
 
 const { year } = Astro.params;
-return Astro.redirect(year ? `/?year=${year}` : '/archive');
+const locale = resolveLocale(Astro.url);
+return Astro.redirect(
+  year
+    ? buildLocaleHref('/', locale, `year=${year}`)
+    : withBasePath('/archive')
+);
 ---

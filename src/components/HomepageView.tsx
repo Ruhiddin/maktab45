@@ -5,6 +5,7 @@ import { buildLocaleHref, getMessages, type Locale } from '../lib/i18n';
 import { isPlaceholderMode, MOCK_QUALIFICATIONS, MOCK_RANKINGS, MOCK_ADMIN_SETTINGS } from '../lib/mockData';
 import { fetchPublicSettingsDirect } from '../lib/publicData';
 import { supabase } from '../lib/supabase';
+import { withBasePath } from '../lib/utils';
 import type { StudentRank } from '../types';
 
 type Props = {
@@ -91,7 +92,7 @@ export default function HomepageView({
 
       if (selectedYear) {
         try {
-          const response = await fetch(`/archives/${selectedYear}_archive.json`);
+          const response = await fetch(withBasePath(`/archives/${selectedYear}_archive.json`));
           const archive = response.ok ? ((await response.json()) as ArchiveSnapshot) : null;
           if (!cancelled) {
             setLeaderboardData(buildArchiveRankingData(archive));

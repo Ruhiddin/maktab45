@@ -4,6 +4,7 @@ import ClientStudyYearPicker from './ClientStudyYearPicker';
 import { buildArchiveRankingData, type ArchiveSnapshot } from '../lib/archiveSnapshot';
 import { isPlaceholderMode, MOCK_RANKINGS } from '../lib/mockData';
 import { supabase } from '../lib/supabase';
+import { withBasePath } from '../lib/utils';
 import type { StudentRank } from '../types';
 import type { Locale } from '../lib/i18n';
 
@@ -58,7 +59,7 @@ export default function ClassDetailView({
 
       if (selectedYear) {
         try {
-          const response = await fetch(`/archives/${selectedYear}_archive.json`);
+          const response = await fetch(withBasePath(`/archives/${selectedYear}_archive.json`));
           const archive = response.ok ? ((await response.json()) as ArchiveSnapshot) : null;
           if (!cancelled) {
             setAllStudents(buildArchiveRankingData(archive));
