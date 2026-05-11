@@ -39,7 +39,9 @@ export default function AuditLog() {
 
   const fetchFiltersData = async () => {
     try {
+      const token = localStorage.getItem('admin_token');
       const data = await apiJson<{id: string, full_name: string}[]>('authTeachersList', {
+        token,
         fallbackError: 'Failed to fetch teachers for filters',
       });
       setTeachers(data);

@@ -33,3 +33,48 @@ jwt_expiry = 3600
 [edge_runtime]
 enabled = true
 policy = "per_worker"
+
+[functions.admin-archive]
+verify_jwt = false
+
+[functions.admin-audit-log]
+verify_jwt = false
+
+[functions.admin-import-parse]
+verify_jwt = false
+
+[functions.admin-settings]
+verify_jwt = false
+
+[functions.admin-students]
+verify_jwt = false
+
+[functions.admin-students-import]
+verify_jwt = false
+
+[functions.admin-teacher-reset-password]
+verify_jwt = false
+
+[functions.admin-teachers]
+verify_jwt = false
+
+[functions.admin-teachers-import]
+verify_jwt = false
+
+[functions.auth-admin-login]
+verify_jwt = false
+
+[functions.auth-teacher-change-password]
+verify_jwt = false
+
+[functions.auth-teacher-login]
+verify_jwt = false
+
+[functions.auth-teachers-list]
+verify_jwt = false
+
+[functions.qualifications]
+verify_jwt = false
+
+[functions.teacher-activity]
+verify_jwt = false

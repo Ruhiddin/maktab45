@@ -28,12 +28,7 @@ Deno.serve(async (request) => {
   const serviceClient = createServiceClient();
   let query = serviceClient
     .from('audit_log')
-    .select(`
-      *,
-      teachers (
-        full_name
-      )
-    `, { count: 'exact' });
+    .select('*', { count: 'exact' });
 
   if (teacherId) {
     query = query.eq('actor_id', teacherId);
@@ -56,10 +51,36 @@ Deno.serve(async (request) => {
     return withCors(request, jsonError(500, error.message));
   }
 
+  const teacherActorIds = Array.from(
+    new Set(
+      (data || [])
+        .filter((log: any) => log.actor_type === 'teacher' && log.actor_id)
+        .map((log: any) => log.actor_id as string)
+    )
+  );
+
+  const teacherNameMap = new Map<string, string>();
+  if (teacherActorIds.length > 0) {
+    const { data: teacherRows, error: teacherError } = await serviceClient
+      .from('teachers')
+      .select('id, full_name')
+      .in('id', teacherActorIds);
+
+    if (teacherError) {
+      return withCors(request, jsonError(500, teacherError.message));
+    }
+
+    for (const teacher of teacherRows || []) {
+      teacherNameMap.set(teacher.id, teacher.full_name);
+    }
+  }
+
   const formattedData = (data || []).map((log: any) => ({
     ...log,
-    actor_name: log.teachers?.full_name || (log.actor_type === 'admin' ? 'Admin' : null),
-    teachers: undefined,
+    actor_name:
+      log.actor_type === 'admin'
+        ? 'Admin'
+        : (log.actor_id ? teacherNameMap.get(log.actor_id) : null) ?? null,
   }));
 
   return withCors(request, json({ data: formattedData, total: count || 0 }));

@@ -38,14 +38,20 @@ export function buildLocaleHref(
   locale: Locale,
   searchParams?: URLSearchParams | string | null
 ): string {
-  const normalizedPath = stripBasePrefix(pathname.startsWith('/') ? pathname : `/${pathname}`);
-  const params = new URLSearchParams(
+  const [rawPathname, inlineQuery = ''] = (pathname.startsWith('/') ? pathname : `/${pathname}`).split('?', 2);
+  const normalizedPath = stripBasePrefix(rawPathname);
+  const params = new URLSearchParams(inlineQuery);
+  const externalParams = new URLSearchParams(
     typeof searchParams === 'string'
       ? searchParams
       : searchParams instanceof URLSearchParams
         ? searchParams.toString()
         : ''
   );
+
+  for (const [key, value] of externalParams.entries()) {
+    params.set(key, value);
+  }
 
   params.set('lang', locale);
   const query = params.toString();
