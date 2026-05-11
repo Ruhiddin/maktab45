@@ -133,12 +133,19 @@ export default function StudentsTable() {
 
   const handleImport = async (parsedData: any[]) => {
     const token = localStorage.getItem('admin_token');
-    const result = await apiJson<{ created?: number; skipped?: number }>('adminStudentsImport', {
+    const result = await apiJson<{ created?: number; skipped?: number; errors?: string[] }>('adminStudentsImport', {
       method: 'POST',
       token,
       json: { students: parsedData },
       fallbackError: 'Import failed',
     });
+
+    if (Array.isArray(result.errors) && result.errors.length > 0) {
+      const summary = `${result.created || 0} students created, ${result.skipped || 0} skipped.`;
+      const details = result.errors.slice(0, 2).join(' ');
+      throw new Error(`${summary} ${details}`.trim());
+    }
+
     showToast({
       type: 'success',
       title: 'Import complete',

@@ -11,10 +11,27 @@ type StudentImportRow = {
   section?: unknown;
 };
 
+function normalizeStudentGender(value: unknown) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === 'male' || normalized === 'erkak' || normalized === 'o‘g‘il' || normalized === "o'g'il") {
+    return 'male' as const;
+  }
+
+  if (normalized === 'female' || normalized === 'ayol' || normalized === 'qiz') {
+    return 'female' as const;
+  }
+
+  return normalized;
+}
+
 function normalizeStudentRow(row: StudentImportRow) {
   return {
     full_name: typeof row.full_name === 'string' ? row.full_name.trim() : '',
-    gender: typeof row.gender === 'string' ? row.gender.trim().toLowerCase() : '',
+    gender: normalizeStudentGender(row.gender),
     grade: typeof row.grade === 'number' ? row.grade : Number(row.grade),
     section: typeof row.section === 'string' ? row.section.trim() || null : null,
   };

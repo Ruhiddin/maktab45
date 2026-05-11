@@ -20,11 +20,28 @@ function isImportKind(value: string | null): value is ImportKind {
   return value === 'students' || value === 'teachers';
 }
 
+function normalizeStudentGender(value: unknown) {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === 'male' || normalized === 'erkak' || normalized === 'o‘g‘il' || normalized === "o'g'il") {
+    return 'male';
+  }
+
+  if (normalized === 'female' || normalized === 'ayol' || normalized === 'qiz') {
+    return 'female';
+  }
+
+  return normalized;
+}
+
 function normalizeRows(kind: ImportKind, rows: Record<string, unknown>[]) {
   if (kind === 'students') {
     return rows.map((row) => ({
       full_name: typeof row.full_name === 'string' ? row.full_name.trim() : row.full_name,
-      gender: typeof row.gender === 'string' ? row.gender.trim().toLowerCase() : row.gender,
+      gender: normalizeStudentGender(row.gender),
       grade: typeof row.grade === 'string' ? Number(row.grade) : row.grade,
       section: typeof row.section === 'string' ? row.section.trim() : row.section,
     }));
