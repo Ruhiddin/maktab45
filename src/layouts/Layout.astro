@@ -152,14 +152,24 @@ const runtimeLocaleMessages = Object.fromEntries(
 	</body>
 </html>
 
+<script
+	id="layout-i18n-data"
+	type="application/json"
+	set:html={JSON.stringify(runtimeLocaleMessages)}
+></script>
+
 <script is:inline>
 	(() => {
-		const localeMessages = JSON.parse({JSON.stringify(JSON.stringify(runtimeLocaleMessages))});
+		const localeDataNode = document.getElementById('layout-i18n-data');
+		if (!localeDataNode?.textContent) return;
+		const localeMessages = JSON.parse(localeDataNode.textContent);
 		const params = new URLSearchParams(window.location.search);
 		const activeLocale = params.get('lang');
 		if (!activeLocale) return;
 		const activeMessages = localeMessages[activeLocale];
 		if (!activeMessages) return;
+
+		document.documentElement.setAttribute('lang', activeLocale);
 
 		document.querySelectorAll('[data-i18n-text]').forEach((node) => {
 			const key = node.getAttribute('data-i18n-text');
