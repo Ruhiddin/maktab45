@@ -64,7 +64,7 @@ const MESSAGES = {
     language: 'Til',
     localeLabel: { uz: "O'zbek", en: 'English', ru: 'Русский' },
     layout: {
-      footerEyebrow: 'Ehtibor bilan yaratilgan',
+      footerEyebrow: 'Mehr bilan yaratilgan',
       footerTitle: 'Maktablar uchun qurilgan. Mahsulot jamoasi tomonidan qo‘llab-quvvatlangan.',
       footerBody: 'Ushbu sayt BITHERD tomonidan yaratilgan va Sitora, FarGoneE mahsuloti tomonidan homiylik qilingan.',
       bitherdRole: 'Dizayn va muhandislik hamkori',
