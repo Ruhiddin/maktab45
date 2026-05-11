@@ -106,7 +106,7 @@ export default function MyActivity({ locale, token, refreshTrigger = 0 }: Props)
   }
 
   return (
-    <div className="p-6 rounded-3xl bg-white/8 backdrop-blur-xl border border-white/10 shadow-[0_18px_40px_rgba(15,23,42,0.35)] h-fit">
+    <div className="relative z-0 p-6 rounded-3xl bg-white/8 backdrop-blur-xl border border-white/10 shadow-[0_18px_40px_rgba(15,23,42,0.35)] h-fit">
       <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
         <Activity className="w-5 h-5 text-indigo-500" />
         {m.teacher.myActivity}

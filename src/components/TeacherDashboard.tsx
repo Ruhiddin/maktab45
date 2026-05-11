@@ -247,7 +247,7 @@ export default function TeacherDashboard({ locale, token, profile, onLogout }: P
         {/* Left column: Search + Form */}
         <div className="space-y-6">
           {/* Search to Select */}
-          <div className="relative p-6 rounded-3xl bg-white/8 backdrop-blur-xl border border-white/10 shadow-[0_18px_40px_rgba(15,23,42,0.35)]">
+          <div className="relative z-30 xl:z-10 p-6 rounded-3xl bg-white/8 backdrop-blur-xl border border-white/10 shadow-[0_18px_40px_rgba(15,23,42,0.35)]">
             <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
               <Search className="w-5 h-5 text-indigo-500" />
               {m.teacher.selectStudent}
@@ -296,7 +296,7 @@ export default function TeacherDashboard({ locale, token, profile, onLogout }: P
 
                 {/* Dropdown */}
                 {filteredStudents.length > 0 && (
-                  <div className="absolute z-50 left-0 right-0 mt-2 bg-slate-950 border border-white/10 rounded-2xl shadow-xl max-h-60 overflow-y-auto">
+                  <div className="absolute z-[70] left-0 right-0 mt-2 bg-slate-950 border border-white/10 rounded-2xl shadow-xl max-h-60 overflow-y-auto">
                     {filteredStudents.map(s => (
                       <button
                         key={s.id}
@@ -316,7 +316,7 @@ export default function TeacherDashboard({ locale, token, profile, onLogout }: P
                 )}
 
                 {search.length > 0 && filteredStudents.length === 0 && (
-                  <div className="absolute z-50 left-0 right-0 mt-2 p-4 bg-slate-950 border border-white/10 rounded-2xl shadow-xl text-center text-slate-400 text-sm">
+                  <div className="absolute z-[70] left-0 right-0 mt-2 p-4 bg-slate-950 border border-white/10 rounded-2xl shadow-xl text-center text-slate-400 text-sm">
                     {m.teacher.noStudentsMatch} "{search}"
                   </div>
                 )}
