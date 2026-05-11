@@ -63,5 +63,9 @@ export function normalizeImportErrorMessage(message: string): string {
     return 'The selected file could not be read. Try exporting it again and upload a valid .xlsx, .xls, or .csv file.';
   }
 
+  if (lower.includes('csv-only')) {
+    return 'The spreadsheet could not be converted for upload. Try saving it again in Excel and re-uploading the file.';
+  }
+
   return trimmed;
 }

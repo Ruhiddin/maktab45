@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2, Download, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as XLSX from 'xlsx';
 import { apiJson } from '../../lib/apiClient';
 import { normalizeImportErrorMessage } from '../../lib/clientErrors';
 import { useToast } from '../toast/ToastProvider';
@@ -20,6 +21,38 @@ export interface ExcelImporterProps {
   parseKind: 'students' | 'teachers';
   isOpen: boolean;
   onClose: () => void;
+}
+
+function isSpreadsheetFile(file: File) {
+  const lowerName = file.name.toLowerCase();
+  return lowerName.endsWith('.xlsx') || lowerName.endsWith('.xls');
+}
+
+async function prepareUploadFile(file: File) {
+  if (!isSpreadsheetFile(file)) {
+    return file;
+  }
+
+  const buffer = await file.arrayBuffer();
+  const workbook = XLSX.read(buffer, { type: 'array' });
+  const firstSheetName = workbook.SheetNames[0];
+  if (!firstSheetName) {
+    throw new Error('The spreadsheet does not contain any sheets.');
+  }
+
+  const firstSheet = workbook.Sheets[firstSheetName];
+  const csv = XLSX.utils.sheet_to_csv(firstSheet, {
+    FS: ',',
+    RS: '\n',
+    blankrows: false,
+  });
+
+  if (!csv.trim()) {
+    throw new Error('The spreadsheet is empty. Add at least one data row and try again.');
+  }
+
+  const csvName = file.name.replace(/\.(xlsx|xls)$/i, '.csv');
+  return new File([csv], csvName, { type: 'text/csv;charset=utf-8;' });
 }
 
 export default function ExcelImporter({
@@ -54,8 +87,9 @@ export default function ExcelImporter({
         throw new Error('Missing admin session. Please sign in again.');
       }
 
+      const uploadFile = await prepareUploadFile(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', uploadFile);
 
       const result = await apiJson<{ rows: any[] }>('adminImportParse', {
         method: 'POST',
@@ -170,15 +204,15 @@ export default function ExcelImporter({
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Click or drag file to upload</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mb-6">
-                Supported format: .csv. Keep the first header row unchanged before uploading.
+                Supported formats: .xlsx, .xls, .csv. Excel files are converted automatically before upload. Keep the first header row unchanged.
               </p>
 
               <input
                 type="file"
                 ref={fileInputRef}
                 className="hidden"
-                aria-label="Upload CSV file"
-                accept=".csv,text/csv"
+                aria-label="Upload spreadsheet file"
+                accept=".csv,text/csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                 onChange={handleFileUpload}
               />
 

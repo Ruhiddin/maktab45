@@ -79,9 +79,9 @@ The repo includes a local Supabase functions workspace under [supabase](/home/ru
 Import decision for the Supabase Edge migration:
 
 - production Edge uploads are `CSV-first`
-- `.xlsx` / `.xls` are not accepted for the Edge target
+- the browser converts `.xlsx` / `.xls` uploads to CSV automatically before sending them to Edge
 - reason: Supabase Edge Functions run on Deno, and SheetJS documents Deno support as experimental
-- the hosted contract is CSV
+- the hosted server-side contract remains CSV internally
 
 ### Local Supabase startup
 
@@ -251,8 +251,8 @@ Notes:
 - `gender` must be `male` or `female`
 - `grade` must be an integer from `1` to `11`
 - duplicate students are skipped by `full_name + grade + section`
-- the hosted migration target accepts `.csv`
-- convert existing Excel sheets to CSV before upload when using the Supabase Edge deployment
+- the hosted admin panel accepts `.xlsx`, `.xls`, and `.csv`
+- Excel files are converted to CSV in the browser before upload
 
 ### Teachers import
 
@@ -268,7 +268,8 @@ Notes:
 - `subjects` can be comma-separated text
 - re-importing an existing teacher updates subjects and resets the password
 - imported teacher passwords must meet the backend minimum length rule
-- the hosted migration target accepts `.csv`
+- the hosted admin panel accepts `.xlsx`, `.xls`, and `.csv`
+- Excel files are converted to CSV in the browser before upload
 
 ## Commands
 
