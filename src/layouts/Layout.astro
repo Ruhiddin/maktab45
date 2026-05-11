@@ -19,6 +19,19 @@ const pageTitle = title.includes(siteName) ? title : `${title} — ${siteName}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://localhost:4321');
 const currentLocale = locale || resolveLocale(Astro.url);
 const m = getMessages(currentLocale);
+const runtimeLocaleMessages = Object.fromEntries(
+	SUPPORTED_LOCALES.map((supportedLocale) => {
+		const messages = getMessages(supportedLocale);
+		return [
+			supportedLocale,
+			{
+				language: messages.language,
+				localeLabel: messages.localeLabel,
+				layout: messages.layout,
+			},
+		];
+	})
+);
 ---
 
 <!doctype html>
@@ -61,13 +74,14 @@ const m = getMessages(currentLocale);
 	</head>
 	<body class="font-sans antialiased">
 		<div class="site-shell">
-			<div class="site-locale-switcher" aria-label={m.language}>
-				<span class="site-locale-switcher__label">{m.language}</span>
+			<div class="site-locale-switcher" aria-label={m.language} data-i18n-aria="language">
+				<span class="site-locale-switcher__label" data-i18n-text="language">{m.language}</span>
 				<div class="site-locale-switcher__pills">
 					{SUPPORTED_LOCALES.map((supportedLocale) => (
 						<a
 							href={buildLocaleHref(Astro.url.pathname, supportedLocale, Astro.url.searchParams)}
 							data-locale-pill={supportedLocale}
+							data-locale-label={supportedLocale}
 							aria-current={currentLocale === supportedLocale ? 'page' : undefined}
 							class:list={[
 								'site-locale-switcher__pill',
@@ -88,8 +102,8 @@ const m = getMessages(currentLocale);
 				<div class="site-footer__glow site-footer__glow--right"></div>
 				<div class="site-footer__inner">
 					<div class="site-footer__intro">
-						<span class="site-footer__eyebrow">{m.layout.footerEyebrow}</span>
-						<p>
+						<span class="site-footer__eyebrow" data-i18n-text="layout.footerEyebrow">{m.layout.footerEyebrow}</span>
+						<p data-i18n-text="layout.footerBody">
 							{m.layout.footerBody}
 						</p>
 					</div>
@@ -102,7 +116,7 @@ const m = getMessages(currentLocale);
 								</div>
 								<div>
 									<h3>BITHERD</h3>
-									<p>{m.layout.bitherdRole}</p>
+									<p data-i18n-text="layout.bitherdRole">{m.layout.bitherdRole}</p>
 								</div>
 							</div>
 							<div class="site-footer__links">
@@ -118,18 +132,18 @@ const m = getMessages(currentLocale);
 								</div>
 								<div>
 									<h3>Sitora</h3>
-									<p>{m.layout.sitoraRole}</p>
+									<p data-i18n-text="layout.sitoraRole">{m.layout.sitoraRole}</p>
 								</div>
 							</div>
 							<div class="site-footer__pill-row">
-								<span class="site-footer__pill">{m.layout.sponsoredBy}</span>
-								<span class="site-footer__pill">{m.layout.productBy}</span>
+								<span class="site-footer__pill" data-i18n-text="layout.sponsoredBy">{m.layout.sponsoredBy}</span>
+								<span class="site-footer__pill" data-i18n-text="layout.productBy">{m.layout.productBy}</span>
 							</div>
 						</article>
 					</div>
 
 					<div class="site-footer__bottom">
-						<p>{m.layout.footerSummary}</p>
+						<p data-i18n-text="layout.footerSummary">{m.layout.footerSummary}</p>
 						<p>&copy; {new Date().getFullYear()} {siteName}</p>
 					</div>
 				</div>
@@ -140,13 +154,38 @@ const m = getMessages(currentLocale);
 
 <script is:inline>
 	(() => {
+		const localeMessages = JSON.parse({JSON.stringify(JSON.stringify(runtimeLocaleMessages))});
 		const params = new URLSearchParams(window.location.search);
 		const activeLocale = params.get('lang');
 		if (!activeLocale) return;
+		const activeMessages = localeMessages[activeLocale];
+		if (!activeMessages) return;
+
+		document.querySelectorAll('[data-i18n-text]').forEach((node) => {
+			const key = node.getAttribute('data-i18n-text');
+			if (!key) return;
+			const value = key.split('.').reduce((acc, part) => acc?.[part], activeMessages);
+			if (typeof value === 'string') {
+				node.textContent = value;
+			}
+		});
+
+		document.querySelectorAll('[data-i18n-aria]').forEach((node) => {
+			const key = node.getAttribute('data-i18n-aria');
+			if (!key) return;
+			const value = key.split('.').reduce((acc, part) => acc?.[part], activeMessages);
+			if (typeof value === 'string') {
+				node.setAttribute('aria-label', value);
+			}
+		});
 
 		document.querySelectorAll('[data-locale-pill]').forEach((node) => {
 			const pill = node;
+			const localeKey = pill.getAttribute('data-locale-label');
 			const isActive = pill.getAttribute('data-locale-pill') === activeLocale;
+			if (localeKey && activeMessages.localeLabel?.[localeKey]) {
+				pill.textContent = activeMessages.localeLabel[localeKey];
+			}
 			if (isActive) {
 				pill.setAttribute('aria-current', 'page');
 				pill.classList.add('site-locale-switcher__pill--active');
