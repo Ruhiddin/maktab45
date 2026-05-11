@@ -5,8 +5,10 @@ import { ArrowLeft, Users, Award, TrendingUp, Zap, PieChart as PieChartIcon, Lay
 import { fetchMostActiveTeacherForClass } from '../lib/publicData';
 import { buildStudentHref, buildYearHref, formatGradeSection } from '../lib/utils';
 import type { StudentRank } from '../types';
+import { getMessages, type Locale } from '../lib/i18n';
 
 interface Props {
+  locale: Locale;
   grade: number;
   section?: string | null;
   students: StudentRank[];
@@ -15,7 +17,8 @@ interface Props {
   isArchiveView?: boolean;
 }
 
-export default function ClassDetail({ grade, section, students, allStudents, selectedYear = null, isArchiveView = false }: Props) {
+export default function ClassDetail({ locale, grade, section, students, allStudents, selectedYear = null, isArchiveView = false }: Props) {
+  const m = getMessages(locale);
   const [selectedSection, setSelectedSection] = useState<string | null>(section || null);
   const [mostActiveTeacher, setMostActiveTeacher] = useState<{ id: string; full_name: string } | null>(null);
   const [mostActiveTeacherCount, setMostActiveTeacherCount] = useState(0);
@@ -68,8 +71,8 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
   }, [allStudents]);
 
   const comparisonData = [
-    { name: `Grade ${formatGradeSection(grade, selectedSection)}`, avg: classAvg, fill: '#6366f1' },
-    { name: 'School Avg', avg: schoolAvg, fill: '#94a3b8' },
+    { name: m.classDetail.gradeLabel.replace('{grade}', formatGradeSection(grade, selectedSection)), avg: classAvg, fill: '#6366f1' },
+    { name: m.classDetail.schoolAverage, avg: schoolAvg, fill: '#94a3b8' },
   ];
 
   // Category breakdown
@@ -77,12 +80,12 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
     if (displayStudents.length === 0) return [];
     const len = displayStudents.length;
     return [
-      { name: 'Academic', avg: Math.round((displayStudents.reduce((a, s) => a + s.academic_score, 0) / len) * 10) / 10 },
-      { name: 'Behavior', avg: Math.round((displayStudents.reduce((a, s) => a + s.behavior_score, 0) / len) * 10) / 10 },
-      { name: 'Extra', avg: Math.round((displayStudents.reduce((a, s) => a + s.extracurricular_score, 0) / len) * 10) / 10 },
-      { name: 'Attendance', avg: Math.round((displayStudents.reduce((a, s) => a + s.attendance_score, 0) / len) * 10) / 10 },
+      { name: m.public.academic, avg: Math.round((displayStudents.reduce((a, s) => a + s.academic_score, 0) / len) * 10) / 10 },
+      { name: m.public.behavior, avg: Math.round((displayStudents.reduce((a, s) => a + s.behavior_score, 0) / len) * 10) / 10 },
+      { name: m.classDetail.extraShort, avg: Math.round((displayStudents.reduce((a, s) => a + s.extracurricular_score, 0) / len) * 10) / 10 },
+      { name: m.public.attendance, avg: Math.round((displayStudents.reduce((a, s) => a + s.attendance_score, 0) / len) * 10) / 10 },
     ];
-  }, [displayStudents]);
+  }, [displayStudents, m.classDetail.extraShort, m.public.academic, m.public.attendance, m.public.behavior]);
 
   const sectionComparisonData = useMemo(() => {
     if (selectedSection || sections.length === 0) return [];
@@ -94,12 +97,12 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
         : Math.round((sectionStudents.reduce((sum, student) => sum + student.total_score, 0) / sectionStudents.length) * 10) / 10;
 
       return {
-        name: `Section ${sec}`,
+        name: m.classDetail.section.replace('{section}', sec),
         avg: avgScore,
         students: sectionStudents.length,
       };
     });
-  }, [sections, selectedSection, students]);
+  }, [m.classDetail.section, sections, selectedSection, students]);
 
   const scoreDistributionData = useMemo(() => {
     const buckets = [
@@ -122,11 +125,11 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
     const needsSupport = displayStudents.filter((student) => student.total_score < 0).length;
 
     return [
-      { name: 'Positive', value: positive, color: '#22c55e' },
-      { name: 'Steady', value: steady, color: '#94a3b8' },
-      { name: 'Needs Support', value: needsSupport, color: '#f97316' },
+      { name: m.classDetail.positive, value: positive, color: '#22c55e' },
+      { name: m.classDetail.steady, value: steady, color: '#94a3b8' },
+      { name: m.classDetail.needsSupport, value: needsSupport, color: '#f97316' },
     ].filter((entry) => entry.value > 0);
-  }, [displayStudents]);
+  }, [displayStudents, m.classDetail.needsSupport, m.classDetail.positive, m.classDetail.steady]);
 
   // Top 5
   const top5 = useMemo(() => {
@@ -140,7 +143,7 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
       {/* Back button */}
       <a href={buildYearHref('/', selectedYear)} className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors font-medium">
         <ArrowLeft className="w-4 h-4" />
-        Back to Leaderboard
+        {m.classDetail.back}
       </a>
 
       {/* Header */}
@@ -155,26 +158,26 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
           </div>
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
-              Grade {formatGradeSection(grade, selectedSection)}
+              {m.classDetail.gradeLabel.replace('{grade}', formatGradeSection(grade, selectedSection))}
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">{displayStudents.length} students</p>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">{m.classDetail.students.replace('{count}', String(displayStudents.length))}</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex gap-4">
               <div className="flex flex-col items-center px-6 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900">
-                <span className="text-xs font-medium text-indigo-500">Class Avg</span>
+                <span className="text-xs font-medium text-indigo-500">{m.classDetail.classAverage}</span>
                 <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{classAvg}</span>
               </div>
               <div className="flex flex-col items-center px-6 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-                <span className="text-xs font-medium text-gray-500">School Avg</span>
+                <span className="text-xs font-medium text-gray-500">{m.classDetail.schoolAverage}</span>
                 <span className="text-2xl font-black text-gray-600 dark:text-gray-300">{schoolAvg}</span>
               </div>
             </div>
             {mostActiveTeacher && !isArchiveView && (
               <div className="flex flex-col items-center px-6 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50">
-                <span className="text-xs font-medium text-amber-700 dark:text-amber-300">Most Active</span>
+                <span className="text-xs font-medium text-amber-700 dark:text-amber-300">{m.classDetail.mostActive}</span>
                 <span className="text-sm font-bold text-amber-900 dark:text-amber-100 truncate">{mostActiveTeacher.full_name}</span>
-                <span className="text-xs text-amber-600 dark:text-amber-400">{mostActiveTeacherCount} qualifications</span>
+                <span className="text-xs text-amber-600 dark:text-amber-400">{m.classDetail.qualificationsCount.replace('{count}', String(mostActiveTeacherCount))}</span>
               </div>
             )}
           </div>
@@ -191,7 +194,7 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
             >
-              All Sections
+              {m.classDetail.allSections}
             </button>
             {sections.map((sec) => (
               <button
@@ -203,7 +206,7 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                Section {sec}
+                {m.classDetail.section.replace('{section}', sec)}
               </button>
             ))}
           </div>
@@ -220,7 +223,7 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
         >
           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-green-500" />
-            Class vs School Average
+            {m.classDetail.classVsSchoolAverage}
           </h2>
           <div className="w-full h-64">
             <ResponsiveContainer>
@@ -255,7 +258,7 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
         >
           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <Users className="w-5 h-5 text-indigo-500" />
-            Category Breakdown
+            {m.classDetail.categoryBreakdown}
           </h2>
           <div className="w-full h-64">
             <ResponsiveContainer>
@@ -287,7 +290,7 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
         >
           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <Layers3 className="w-5 h-5 text-sky-500" />
-            Score Distribution
+            {m.classDetail.scoreDistribution}
           </h2>
           <div className="w-full h-64">
             <ResponsiveContainer>
@@ -321,12 +324,12 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
         >
           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <PieChartIcon className="w-5 h-5 text-emerald-500" />
-            Class Health Split
+            {m.classDetail.classHealthSplit}
           </h2>
           <div className="w-full h-64">
             {classHealthData.length === 0 ? (
               <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm">
-                No student scores available yet.
+                {m.classDetail.noScores}
               </div>
             ) : (
               <ResponsiveContainer>
@@ -370,7 +373,7 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
         >
           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <Zap className="w-5 h-5 text-violet-500" />
-            Section Comparison
+            {m.classDetail.sectionComparison}
           </h2>
           <div className="w-full h-72">
             <ResponsiveContainer>
@@ -388,8 +391,8 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
                   }}
                 />
                 <Legend />
-                <Bar yAxisId="left" dataKey="avg" name="Average score" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
-                <Bar yAxisId="right" dataKey="students" name="Student count" fill="#38bdf8" radius={[8, 8, 0, 0]} />
+                <Bar yAxisId="left" dataKey="avg" name={m.classDetail.averageScore} fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+                <Bar yAxisId="right" dataKey="students" name={m.classDetail.studentCount} fill="#38bdf8" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -405,10 +408,10 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
       >
         <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <Award className="w-5 h-5 text-yellow-500" />
-          Top 5 in Grade {formatGradeSection(grade, selectedSection)}
+          {m.classDetail.topFive.replace('{grade}', formatGradeSection(grade, selectedSection))}
         </h2>
         {top5.length === 0 ? (
-          <p className="text-gray-500 text-center py-6">No students in this grade.</p>
+          <p className="text-gray-500 text-center py-6">{m.classDetail.noStudentsInGrade}</p>
         ) : (
           <div className="space-y-3">
             {top5.map((s, i) => (
@@ -432,7 +435,7 @@ export default function ClassDetail({ grade, section, students, allStudents, sel
                   <div className="font-semibold text-gray-800 dark:text-gray-100 truncate">
                     {s.name} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">({formatGradeSection(s.grade, s.section)})</span>
                   </div>
-                  <div className="text-sm text-gray-500">{s.gender === 'male' ? 'Male' : 'Female'}</div>
+                  <div className="text-sm text-gray-500">{s.gender === 'male' ? m.public.male : m.public.female}</div>
                 </div>
                 <div className="text-xl font-black text-indigo-600 dark:text-indigo-400 flex-shrink-0">
                   {s.total_score > 0 ? `+${s.total_score}` : s.total_score}

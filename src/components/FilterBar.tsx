@@ -1,4 +1,5 @@
 import React from 'react';
+import { RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { buildLocaleHref, getMessages, type Locale } from '../lib/i18n';
 import type { Category, Gender } from '../types';
@@ -16,6 +17,8 @@ type Props = {
   currentAcademicYear?: string;
   archiveYears?: number[];
   selectedYear?: string | null;
+  lastRefreshedAt?: string | null;
+  refreshing?: boolean;
 
   availableSections: string[];
   showMyClass: boolean;
@@ -28,6 +31,7 @@ type Props = {
   onChangeSearch: (search: string) => void;
   onToggleView: (view: ViewMode) => void;
   onMyClass: () => void;
+  onRefresh: () => void;
 };
 
 export default function FilterBar({
@@ -41,6 +45,8 @@ export default function FilterBar({
   currentAcademicYear,
   archiveYears = [],
   selectedYear = null,
+  lastRefreshedAt = null,
+  refreshing = false,
   availableSections,
   showMyClass,
   myClassEnabled,
@@ -51,6 +57,7 @@ export default function FilterBar({
   onChangeSearch,
   onToggleView,
   onMyClass,
+  onRefresh,
 }: Props) {
   const m = getMessages(locale);
   const showSection = gradeFilter !== 'All' && availableSections.length > 0;
@@ -60,6 +67,16 @@ export default function FilterBar({
         ...archiveYears.map((year) => ({ label: `${m.public.archiveLabel} ${year}`, year: String(year) })),
       ]
     : [];
+  const localeMap = { uz: 'uz-UZ', en: 'en-US', ru: 'ru-RU' } as const;
+  const formattedRefreshTime = lastRefreshedAt
+    ? new Date(lastRefreshedAt).toLocaleString(localeMap[locale], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : m.public.neverRefreshed;
 
   const navigateToYear = (year: string | null) => {
     if (typeof window === 'undefined') {
@@ -120,6 +137,28 @@ export default function FilterBar({
             })}
           </div>
         )}
+        <div className="flex items-center gap-2 rounded-2xl border border-gray-200/80 bg-white/55 px-3 py-2 text-xs shadow-sm dark:border-white/10 dark:bg-black/25">
+          <div className="min-w-0">
+            <p className="font-semibold text-gray-700 dark:text-gray-200">{m.public.lastRefresh}</p>
+            <p className="truncate text-gray-500 dark:text-gray-400">{formattedRefreshTime}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={refreshing}
+            className={cn(
+              'inline-flex items-center gap-1 rounded-full px-3 py-1.5 font-semibold transition-colors',
+              refreshing
+                ? 'cursor-wait bg-indigo-100 text-indigo-500 dark:bg-indigo-950/40 dark:text-indigo-300'
+                : 'bg-indigo-500 text-white hover:bg-indigo-600 dark:hover:bg-indigo-400'
+            )}
+            aria-label={refreshing ? m.public.refreshing : m.public.refreshNow}
+            title={refreshing ? m.public.refreshing : m.public.refreshNow}
+          >
+            <RefreshCw className={cn('h-3.5 w-3.5', refreshing && 'animate-spin')} />
+            <span>{refreshing ? m.public.refreshing : m.public.refreshNow}</span>
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2 w-full">

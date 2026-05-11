@@ -20,6 +20,9 @@ interface LeaderboardProps {
   enableHover?: boolean;
   currentAcademicYear?: string;
   archiveYears?: number[];
+  lastRefreshedAt?: string | null;
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }
 
 export default function Leaderboard({
@@ -29,6 +32,9 @@ export default function Leaderboard({
   enableHover = true,
   currentAcademicYear,
   archiveYears = [],
+  lastRefreshedAt = null,
+  refreshing = false,
+  onRefresh = () => {},
 }: LeaderboardProps) {
   const m = getMessages(locale);
   const [gradeFilter, setGradeFilter] = useState<number | 'All'>('All');
@@ -209,6 +215,8 @@ export default function Leaderboard({
         currentAcademicYear={currentAcademicYear}
         archiveYears={archiveYears}
         selectedYear={selectedYear}
+        lastRefreshedAt={lastRefreshedAt}
+        refreshing={refreshing}
         availableSections={availableSections}
         showMyClass={hasTeacherSession}
         myClassEnabled={myClassEnabled}
@@ -221,6 +229,7 @@ export default function Leaderboard({
         onChangeCategory={setCategoryFilter}
         onChangeSearch={setSearch}
         onToggleView={setView}
+        onRefresh={onRefresh}
           onMyClass={() => {
           try {
             const g = localStorage.getItem('teacher_my_class_grade');

@@ -141,6 +141,7 @@ export default function ClassDetailView({
         </div>
       ) : (
         <ClassDetail
+          locale={activeLocale}
           grade={gradeNum}
           section={section}
           students={gradeStudents}

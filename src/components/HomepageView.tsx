@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Leaderboard from './Leaderboard';
 import { buildArchiveRankingData, type ArchiveSnapshot } from '../lib/archiveSnapshot';
 import { buildLocaleHref, getMessages, resolveRuntimeLocale, type Locale } from '../lib/i18n';
@@ -58,6 +58,8 @@ export default function HomepageView({
   const [academicYear, setAcademicYear] = useState(fallbackAcademicYear);
   const [leaderboardData, setLeaderboardData] = useState<StudentRank[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<string | null>(null);
 
   useEffect(() => {
     const syncFromLocation = () => {
@@ -70,12 +72,23 @@ export default function HomepageView({
     return () => window.removeEventListener('popstate', syncFromLocation);
   }, [archiveYears, locale]);
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadHomepageData = useCallback(async (signal?: AbortSignal, options?: { preserveVisibleData?: boolean }) => {
+    const preserveVisibleData = options?.preserveVisibleData ?? false;
+    const isCancelled = () => signal?.aborted ?? false;
+    const markRefreshed = () => {
+      if (!isCancelled()) {
+        setLastRefreshedAt(new Date().toISOString());
+      }
+    };
+    if (preserveVisibleData) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
 
     const loadSettings = async () => {
       if (isPlaceholderMode()) {
-        if (!cancelled) {
+        if (!isCancelled()) {
           setSchoolName(MOCK_ADMIN_SETTINGS.school_name || fallbackSchoolName);
           setAcademicYear(MOCK_ADMIN_SETTINGS.current_academic_year || fallbackAcademicYear);
         }
@@ -83,29 +96,29 @@ export default function HomepageView({
       }
 
       const data = await fetchPublicSettingsDirect();
-      if (!cancelled && data) {
+      if (!isCancelled() && data) {
         setSchoolName(data.school_name || fallbackSchoolName);
         setAcademicYear(data.current_academic_year || fallbackAcademicYear);
       }
     };
 
     const loadLeaderboard = async () => {
-      setLoading(true);
-
       if (selectedYear) {
         try {
           const response = await fetch(withBasePath(`/archives/${selectedYear}_archive.json`));
           const archive = response.ok ? ((await response.json()) as ArchiveSnapshot) : null;
-          if (!cancelled) {
+          if (!isCancelled()) {
             setLeaderboardData(buildArchiveRankingData(archive));
+            markRefreshed();
           }
         } catch {
-          if (!cancelled) {
+          if (!isCancelled()) {
             setLeaderboardData([]);
           }
         } finally {
-          if (!cancelled) {
+          if (!isCancelled()) {
             setLoading(false);
+            setRefreshing(false);
           }
         }
         return;
@@ -125,18 +138,21 @@ export default function HomepageView({
           }
         }
 
-        if (!cancelled) {
+        if (!isCancelled()) {
           setLeaderboardData(withRankDelta(MOCK_RANKINGS as StudentRank[], last7d));
+          markRefreshed();
           setLoading(false);
+          setRefreshing(false);
         }
         return;
       }
 
       const result = await supabase.from('live_ranking').select('*').order('total_score', { ascending: false });
       if (result.error || !result.data) {
-        if (!cancelled) {
+        if (!isCancelled()) {
           setLeaderboardData([]);
           setLoading(false);
+          setRefreshing(false);
         }
         return;
       }
@@ -158,19 +174,30 @@ export default function HomepageView({
         }
       }
 
-      if (!cancelled) {
+      if (!isCancelled()) {
         setLeaderboardData(withRankDelta(students, last7d));
+        markRefreshed();
         setLoading(false);
+        setRefreshing(false);
       }
     };
 
     void loadSettings();
     void loadLeaderboard();
+  }, [fallbackAcademicYear, fallbackSchoolName, selectedYear]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void loadHomepageData(controller.signal);
 
     return () => {
-      cancelled = true;
+      controller.abort();
     };
-  }, [selectedYear, fallbackAcademicYear, fallbackSchoolName]);
+  }, [loadHomepageData]);
+
+  const handleRefresh = () => {
+    void loadHomepageData(undefined, { preserveVisibleData: true });
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12">
@@ -205,6 +232,9 @@ export default function HomepageView({
           enableHover={!selectedYear}
           currentAcademicYear={academicYear}
           archiveYears={archiveYears}
+          lastRefreshedAt={lastRefreshedAt}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
         />
       )}
     </main>
