@@ -27,6 +27,7 @@ export default function TeacherLogin({ locale, onLogin }: Props) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const noTeachersConfigured = !loadingTeachers && !teachersLoadError && teachers.length === 0;
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -41,6 +42,7 @@ export default function TeacherLogin({ locale, onLogin }: Props) {
           fallbackError: m.teacher.loadTeachersError,
         });
         setTeachers(data);
+        setTeachersLoadError('');
       } catch (err) {
         console.error('Failed to load teachers list', err);
         setTeachersLoadError(err instanceof Error ? err.message : m.teacher.loadTeachersNetworkError);
@@ -113,7 +115,11 @@ export default function TeacherLogin({ locale, onLogin }: Props) {
                 className="w-full px-4 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
               >
                 <option value="" disabled>
-                  {loadingTeachers ? m.teacher.loadingTeachers : m.teacher.selectYourName}
+                  {loadingTeachers
+                    ? m.teacher.loadingTeachers
+                    : noTeachersConfigured
+                      ? m.teacher.noTeachersConfigured
+                      : m.teacher.selectYourName}
                 </option>
                 {teachers.map(t => (
                   <option key={t.id} value={t.id}>{t.full_name}</option>
@@ -132,6 +138,17 @@ export default function TeacherLogin({ locale, onLogin }: Props) {
               className="p-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm"
             >
               {teachersLoadError}
+            </motion.div>
+          )}
+
+          {noTeachersConfigured && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 text-sm"
+            >
+              <div className="font-medium">{m.teacher.noTeachersConfigured}</div>
+              <div className="mt-1 opacity-90">{m.teacher.noTeachersConfiguredHint}</div>
             </motion.div>
           )}
 
@@ -172,7 +189,7 @@ export default function TeacherLogin({ locale, onLogin }: Props) {
 
           <button
             type="submit"
-            disabled={loading || loadingTeachers || !selectedTeacherId || !password || Boolean(teachersLoadError)}
+            disabled={loading || loadingTeachers || !selectedTeacherId || !password || Boolean(teachersLoadError) || noTeachersConfigured}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 mt-2"
           >
             {loading ? (
