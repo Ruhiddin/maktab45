@@ -1,0 +1,439 @@
+---
+import { getFallbackPublicSettings } from '../lib/publicSettings';
+import { buildLocaleHref, getMessages, resolveLocale, type Locale, SUPPORTED_LOCALES } from '../lib/i18n';
+
+interface Props {
+	title: string;
+	description?: string;
+	schoolName?: string;
+	noindex?: boolean;
+	locale?: Locale;
+}
+
+const { title, description, schoolName, noindex, locale } = Astro.props;
+const publicSettings = getFallbackPublicSettings();
+const metaDescription = description || 'School Leaderboard — Celebrating academic, behavioral, and extracurricular excellence.';
+const siteName = schoolName || publicSettings.school_name;
+const pageTitle = title.includes(siteName) ? title : `${title} — ${siteName}`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://localhost:4321');
+const currentLocale = locale || resolveLocale(Astro.url);
+const m = getMessages(currentLocale);
+---
+
+<!doctype html>
+<html lang={currentLocale}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+
+		<!-- SEO -->
+		<title>{pageTitle}</title>
+		<meta name="description" content={metaDescription} />
+		<link rel="canonical" href={canonicalURL.href} />
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
+		<meta name="generator" content={Astro.generator} />
+
+		<!-- Open Graph -->
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={metaDescription} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={siteName} />
+		<meta property="og:url" content={canonicalURL.href} />
+		<meta property="og:locale" content="en_US" />
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={metaDescription} />
+
+		<!-- Mobile -->
+		<meta name="theme-color" content="#4f46e5" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+	</head>
+	<body class="font-sans antialiased">
+		<div class="site-shell">
+			<div class="site-locale-switcher" aria-label={m.language}>
+				<span class="site-locale-switcher__label">{m.language}</span>
+				<div class="site-locale-switcher__pills">
+					{SUPPORTED_LOCALES.map((supportedLocale) => (
+						<a
+							href={buildLocaleHref(Astro.url.pathname, supportedLocale, Astro.url.searchParams)}
+							aria-current={currentLocale === supportedLocale ? 'page' : undefined}
+							class:list={[
+								'site-locale-switcher__pill',
+								currentLocale === supportedLocale && 'site-locale-switcher__pill--active',
+							]}
+						>
+							{m.localeLabel[supportedLocale]}
+						</a>
+					))}
+				</div>
+			</div>
+			<main class="site-main">
+				<slot />
+			</main>
+
+			<footer class="site-footer">
+				<div class="site-footer__glow site-footer__glow--left"></div>
+				<div class="site-footer__glow site-footer__glow--right"></div>
+				<div class="site-footer__inner">
+					<div class="site-footer__intro">
+						<span class="site-footer__eyebrow">{m.layout.footerEyebrow}</span>
+						<p>
+							{m.layout.footerBody}
+						</p>
+					</div>
+
+					<div class="site-footer__brands">
+						<article class="site-footer__brand-card">
+							<div class="site-footer__brand-head">
+								<div class="site-footer__logo-ring">
+									<img src="/bitherd-logo.png" alt="BITHERD logo" class="site-footer__logo" loading="lazy" />
+								</div>
+								<div>
+									<h3>BITHERD</h3>
+									<p>{m.layout.bitherdRole}</p>
+								</div>
+							</div>
+							<div class="site-footer__links">
+								<a href="https://t.me/bit_herd" target="_blank" rel="noreferrer">Telegram: @bit_herd</a>
+								<a href="https://instagram.com/bit_herd" target="_blank" rel="noreferrer">Instagram: @bit_herd</a>
+							</div>
+						</article>
+
+						<article class="site-footer__brand-card">
+							<div class="site-footer__brand-head">
+								<div class="site-footer__logo-ring">
+									<img src="/sitora-logo.png" alt="Sitora logo" class="site-footer__logo" loading="lazy" />
+								</div>
+								<div>
+									<h3>Sitora</h3>
+									<p>{m.layout.sitoraRole}</p>
+								</div>
+							</div>
+							<div class="site-footer__pill-row">
+								<span class="site-footer__pill">{m.layout.sponsoredBy}</span>
+								<span class="site-footer__pill">{m.layout.productBy}</span>
+							</div>
+						</article>
+					</div>
+
+					<div class="site-footer__bottom">
+						<p>{m.layout.footerSummary}</p>
+						<p>&copy; {new Date().getFullYear()} {siteName}</p>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>
+
+<style is:global>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		min-height: 100%;
+		font-family: 'Inter', system-ui, sans-serif;
+	}
+
+	body {
+		background:
+			radial-gradient(circle at top, rgba(99, 102, 241, 0.08), transparent 32%),
+			linear-gradient(180deg, #0f172a 0%, #111827 100%);
+		color: #e5e7eb;
+	}
+
+	.site-shell {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.site-main {
+		flex: 1;
+	}
+
+	.site-locale-switcher {
+		position: sticky;
+		top: 0.75rem;
+		z-index: 60;
+		display: flex;
+		justify-content: flex-end;
+		padding: 0.75rem 1rem 0;
+		pointer-events: none;
+	}
+
+	.site-locale-switcher__label,
+	.site-locale-switcher__pills {
+		pointer-events: auto;
+	}
+
+	.site-locale-switcher__label {
+		display: inline-flex;
+		align-items: center;
+		padding: 0 0.65rem;
+		margin-right: 0.5rem;
+		border-radius: 999px;
+		background: rgba(15, 23, 42, 0.72);
+		border: 1px solid rgba(148, 163, 184, 0.16);
+		color: #cbd5e1;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		backdrop-filter: blur(10px);
+	}
+
+	.site-locale-switcher__pills {
+		display: inline-flex;
+		gap: 0.35rem;
+		padding: 0.35rem;
+		border-radius: 999px;
+		background: rgba(15, 23, 42, 0.72);
+		border: 1px solid rgba(148, 163, 184, 0.16);
+		backdrop-filter: blur(10px);
+		box-shadow: 0 10px 28px rgba(2, 6, 23, 0.18);
+	}
+
+	.site-locale-switcher__pill {
+		padding: 0.45rem 0.8rem;
+		border-radius: 999px;
+		color: #cbd5e1;
+		font-size: 0.8rem;
+		font-weight: 700;
+		text-decoration: none;
+		transition: background 160ms ease, color 160ms ease;
+	}
+
+	.site-locale-switcher__pill:hover {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	.site-locale-switcher__pill--active {
+		background: #4f46e5;
+		color: #fff;
+	}
+
+	.site-footer {
+		position: relative;
+		overflow: hidden;
+		border-top: 1px solid rgba(99, 102, 241, 0.18);
+		background:
+			linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.96)),
+			radial-gradient(circle at top left, rgba(99, 102, 241, 0.16), transparent 32%);
+		box-shadow: 0 -24px 60px rgba(2, 6, 23, 0.28);
+	}
+
+	.site-footer__inner {
+		position: relative;
+		z-index: 1;
+		max-width: 1180px;
+		margin: 0 auto;
+		padding: 2.75rem 1.5rem 1.5rem;
+	}
+
+	.site-footer__intro {
+		max-width: 42rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.site-footer__eyebrow {
+		display: inline-flex;
+		padding: 0.35rem 0.75rem;
+		border: 1px solid rgba(129, 140, 248, 0.3);
+		border-radius: 999px;
+		background: rgba(79, 70, 229, 0.16);
+		color: #c7d2fe;
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.site-footer__intro p,
+	.site-footer__bottom p,
+	.site-footer__brand-card p {
+		margin: 0;
+		color: #94a3b8;
+	}
+
+	.site-footer__brands {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	.site-footer__brand-card {
+		padding: 1.25rem;
+		border: 1px solid rgba(148, 163, 184, 0.16);
+		border-radius: 1.5rem;
+		background: rgba(15, 23, 42, 0.68);
+		backdrop-filter: blur(14px);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+	}
+
+	.site-footer__brand-head {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.site-footer__brand-head h3 {
+		margin: 0 0 0.2rem;
+		font-size: 1.05rem;
+		color: #f8fafc;
+	}
+
+	.site-footer__logo-ring {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 4.5rem;
+		height: 4.5rem;
+		flex-shrink: 0;
+		padding: 0.25rem;
+		border-radius: 999px;
+		background: linear-gradient(135deg, rgba(129, 140, 248, 0.9), rgba(244, 114, 182, 0.75));
+		box-shadow: 0 10px 28px rgba(79, 70, 229, 0.26);
+	}
+
+	.site-footer__logo {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 999px;
+		background: #fff;
+		display: block;
+	}
+
+	.site-footer__links,
+	.site-footer__pill-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.7rem;
+	}
+
+	.site-footer__links a,
+	.site-footer__pill {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.4rem;
+		padding: 0.6rem 0.9rem;
+		border-radius: 999px;
+		font-size: 0.92rem;
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.site-footer__links a {
+		border: 1px solid rgba(129, 140, 248, 0.25);
+		background: rgba(99, 102, 241, 0.12);
+		color: #e0e7ff;
+		transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+	}
+
+	.site-footer__links a:hover {
+		transform: translateY(-1px);
+		border-color: rgba(165, 180, 252, 0.55);
+		background: rgba(99, 102, 241, 0.2);
+	}
+
+	.site-footer__pill {
+		border: 1px solid rgba(148, 163, 184, 0.18);
+		background: rgba(30, 41, 59, 0.78);
+		color: #e2e8f0;
+	}
+
+	.site-footer__bottom {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		margin-top: 1.5rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid rgba(148, 163, 184, 0.12);
+		font-size: 0.92rem;
+	}
+
+	.site-footer__glow {
+		position: absolute;
+		width: 18rem;
+		height: 18rem;
+		border-radius: 999px;
+		filter: blur(70px);
+		opacity: 0.24;
+	}
+
+	.site-footer__glow--left {
+		left: -4rem;
+		top: -6rem;
+		background: #4f46e5;
+	}
+
+	.site-footer__glow--right {
+		right: -4rem;
+		bottom: -7rem;
+		background: #ec4899;
+	}
+
+	/* Archive view: grayscale + sepia + read-only */
+	.archive-view {
+		filter: grayscale(0.8) sepia(0.2);
+		pointer-events: none;
+		opacity: 0.9;
+	}
+
+	/* Archive info banner */
+	.archive-banner {
+		pointer-events: auto;
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		padding: 0.75rem 1rem;
+		background: linear-gradient(135deg, #fef3c7, #fde68a);
+		border-bottom: 1px solid #fbbf24;
+		box-shadow: 0 2px 8px rgba(180, 140, 30, 0.15);
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.archive-banner {
+			background: linear-gradient(135deg, #451a03, #78350f);
+			border-bottom-color: #92400e;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.site-locale-switcher {
+			top: 0.5rem;
+			padding: 0.5rem 0.75rem 0;
+		}
+
+		.site-locale-switcher__label {
+			display: none;
+		}
+
+		.site-footer__inner {
+			padding: 2.25rem 1rem 1.25rem;
+		}
+
+		.site-footer__brands {
+			grid-template-columns: 1fr;
+		}
+
+		.site-footer__bottom {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+</style>

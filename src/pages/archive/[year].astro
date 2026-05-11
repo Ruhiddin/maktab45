@@ -1,0 +1,12 @@
+---
+import { listArchiveYears } from '../../lib/archiveData';
+
+export async function getStaticPaths() {
+  return listArchiveYears().map((year) => ({
+    params: { year: String(year) },
+  }));
+}
+
+const { year } = Astro.params;
+return Astro.redirect(year ? `/?year=${year}` : '/archive');
+---

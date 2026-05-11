@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TeacherPortal from '../../components/TeacherPortal';
+import { getFallbackPublicSettings } from '../../lib/publicSettings';
+import { getMessages, resolveLocale } from '../../lib/i18n';
+
+const { school_name: schoolName } = getFallbackPublicSettings();
+const locale = resolveLocale(Astro.url);
+const m = getMessages(locale);
+---
+
+<Layout title={m.public.teacherPortal} description={m.public.teacherPortalDesc} schoolName={schoolName} noindex locale={locale}>
+  <main class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.24),_transparent_32%),linear-gradient(135deg,_#0f172a_0%,_#1e1b4b_55%,_#111827_100%)] py-12">
+    <TeacherPortal client:load locale={locale} />
+  </main>
+</Layout>

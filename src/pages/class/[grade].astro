@@ -1,0 +1,29 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ClassDetailView from '../../components/ClassDetailView';
+import { getFallbackPublicSettings } from '../../lib/publicSettings';
+import { listArchiveYears } from '../../lib/archiveData';
+import { getMessages, resolveLocale } from '../../lib/i18n';
+import { getStaticClassRouteParams } from '../../lib/staticPaths';
+
+export async function getStaticPaths() {
+  return getStaticClassRouteParams();
+}
+
+const { grade: gradeSection } = Astro.params;
+const { school_name: schoolName, current_academic_year: academicYear } = getFallbackPublicSettings();
+const archiveYears = listArchiveYears();
+const locale = resolveLocale(Astro.url);
+const m = getMessages(locale);
+---
+
+<Layout title={`${m.public.gradeSingle} ${gradeSection}`} description={`Stats and top students for ${m.public.gradeSingle} ${gradeSection}.`} schoolName={schoolName} locale={locale}>
+  <ClassDetailView
+    client:load
+    locale={locale}
+    pathname={Astro.url.pathname}
+    gradeSection={gradeSection!}
+    archiveYears={archiveYears}
+    currentAcademicYear={academicYear}
+  />
+</Layout>

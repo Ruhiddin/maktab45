@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HomepageView from '../components/HomepageView';
+import { getFallbackPublicSettings } from '../lib/publicSettings';
+import { listArchiveYears } from '../lib/archiveData';
+import { getMessages, resolveLocale } from '../lib/i18n';
+export const prerender = true;
+
+const { school_name: schoolName, current_academic_year: academicYear } = getFallbackPublicSettings();
+const archiveYears = listArchiveYears();
+const locale = resolveLocale(Astro.url);
+const m = getMessages(locale);
+---
+
+<Layout title={m.public.leaderboard} schoolName={schoolName} locale={locale}>
+  <HomepageView
+    client:load
+    locale={locale}
+    archiveYears={archiveYears}
+    fallbackSchoolName={schoolName}
+    fallbackAcademicYear={academicYear}
+  />
+</Layout>

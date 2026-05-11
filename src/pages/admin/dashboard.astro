@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AdminDashboard from '../../components/admin/AdminDashboard';
+import { getFallbackPublicSettings } from '../../lib/publicSettings';
+import { getMessages, resolveLocale } from '../../lib/i18n';
+
+const { school_name: schoolName } = getFallbackPublicSettings();
+const locale = resolveLocale(Astro.url);
+const m = getMessages(locale);
+---
+
+<Layout title={m.admin.dashboard} description={m.public.adminPanelDesc} schoolName={schoolName} noindex locale={locale}>
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <AdminDashboard client:load locale={locale} />
+  </main>
+</Layout>
