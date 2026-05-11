@@ -1,11 +1,25 @@
-import type { Qualification, StudentDetail, StudentRank } from '../types';
+import type {
+  Qualification,
+  StudentDetail,
+  StudentRank,
+  Teacher,
+  TeacherRank,
+  TeacherPublicProfile,
+} from '../types';
+import {
+  adaptArchiveTeacherRankingRow,
+  buildTeacherPublicProfile,
+  buildTeacherRankingFromQualifications,
+} from './teacherRanking';
 
 export interface ArchiveSnapshot {
   year: number;
   created_at: string;
   students?: Array<Record<string, any>>;
+  teachers?: Array<Record<string, any>>;
   qualifications?: Array<Record<string, any>>;
   rankings?: Array<Record<string, any>>;
+  teacher_ranking?: Array<Record<string, any>>;
 }
 
 export function normalizeArchiveStudent(student: Record<string, any>): StudentDetail {
@@ -32,6 +46,22 @@ export function normalizeArchiveQualification(qualification: Record<string, any>
     teacher_note: qualification.teacher_note ?? null,
     created_at: qualification.created_at ?? new Date(0).toISOString(),
   };
+}
+
+export function normalizeArchiveTeacher(teacher: Record<string, any>): Teacher {
+  return {
+    id: String(teacher.id),
+    full_name: teacher.full_name ?? 'Unknown Teacher',
+    subjects: Array.isArray(teacher.subjects) ? teacher.subjects.map(String) : [],
+    is_password_changed: Boolean(teacher.is_password_changed ?? false),
+    is_active: teacher.is_active ?? true,
+    created_at: teacher.created_at ?? new Date(0).toISOString(),
+    updated_at: teacher.updated_at ?? teacher.created_at ?? new Date(0).toISOString(),
+  };
+}
+
+export function normalizeArchiveTeacherRank(ranking: Record<string, any>): TeacherRank {
+  return adaptArchiveTeacherRankingRow(ranking);
 }
 
 export function buildArchiveRankingData(archive: ArchiveSnapshot | null): StudentRank[] {
@@ -110,4 +140,59 @@ export function buildArchiveRankingData(archive: ArchiveSnapshot | null): Studen
       } satisfies StudentRank;
     })
     .sort((a, b) => (b.total_score - a.total_score) || a.name.localeCompare(b.name));
+}
+
+export function buildArchiveTeacherRankingData(archive: ArchiveSnapshot | null): TeacherRank[] {
+  if (!archive) {
+    return [];
+  }
+
+  if (archive.teacher_ranking?.length) {
+    return archive.teacher_ranking.map(normalizeArchiveTeacherRank);
+  }
+
+  const teachers = (archive.teachers ?? []).map(normalizeArchiveTeacher);
+  if (teachers.length === 0) {
+    return [];
+  }
+
+  const qualifications = (archive.qualifications ?? []).map(normalizeArchiveQualification);
+  return buildTeacherRankingFromQualifications(
+    teachers,
+    qualifications,
+    archive.created_at ? new Date(archive.created_at) : new Date()
+  );
+}
+
+export function buildArchiveTeacherPublicProfile(
+  archive: ArchiveSnapshot | null,
+  teacherId: string
+): TeacherPublicProfile | null {
+  if (!archive) {
+    return null;
+  }
+
+  const ranking = buildArchiveTeacherRankingData(archive).find((entry) => entry.teacher_id === teacherId);
+  if (!ranking) {
+    return null;
+  }
+
+  const students = (archive.students ?? []).map(normalizeArchiveStudent);
+  const teacher = (archive.teachers ?? [])
+    .map(normalizeArchiveTeacher)
+    .find((entry) => entry.id === teacherId && entry.is_active);
+  if (!teacher) {
+    return null;
+  }
+
+  return buildTeacherPublicProfile(
+    teacher,
+    [ranking],
+    (archive.qualifications ?? []).map(normalizeArchiveQualification),
+    students.map((student) => ({
+      id: student.id,
+      grade: student.grade,
+      section: student.section,
+    }))
+  );
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Send, LogOut, User } from 'lucide-react';
 import { apiJson } from '../lib/apiClient';
-import { formatGradeSection } from '../lib/utils';
+import { buildTeacherLeaderboardHref, buildTeacherProfileHref, formatGradeSection } from '../lib/utils';
 import { normalizeTeacherSubjects } from '../lib/teacherSubjects';
 import { buildLocaleHref, getMessages, type Locale } from '../lib/i18n';
 import MyActivity from './MyActivity';
@@ -47,6 +47,8 @@ const CATEGORIES = ['Academic', 'Behavior', 'Extracurricular', 'Attendance'] as 
 export default function TeacherDashboard({ locale, token, profile, onLogout }: Props) {
   const m = getMessages(locale);
   const { showToast } = useToast();
+  const publicTeacherLeaderboardHref = buildLocaleHref(buildTeacherLeaderboardHref(), locale);
+  const publicTeacherProfileHref = buildLocaleHref(buildTeacherProfileHref(profile.id), locale);
   const [students, setStudents] = useState<Student[]>([]);
   const [search, setSearch] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -191,10 +193,10 @@ export default function TeacherDashboard({ locale, token, profile, onLogout }: P
           </div>
           <div className="flex flex-wrap gap-3 items-center relative z-50">
             <a
-              href={buildLocaleHref('/', locale)}
+              href={publicTeacherLeaderboardHref}
               className="px-4 py-2.5 rounded-xl bg-white/10 text-white text-sm font-semibold hover:bg-white/15 transition-colors"
             >
-              {m.teacher.viewLeaderboard}
+              {m.teacher.viewTeacherLeaderboard}
             </a>
             
             <button
@@ -219,14 +221,15 @@ export default function TeacherDashboard({ locale, token, profile, onLogout }: P
                     </p>
                   </div>
                   <div className="p-2">
-                    <button
+                    <a
+                      href={publicTeacherProfileHref}
                       onClick={() => {
                         setShowProfileMenu(false);
                       }}
                       className="w-full text-left px-4 py-2.5 text-sm text-slate-200 hover:bg-white/5 rounded-xl flex items-center gap-2"
                     >
-                      <User className="w-4 h-4" /> {m.teacher.myProfile}
-                    </button>
+                      <User className="w-4 h-4" /> {m.teacher.viewMyPublicProfile}
+                    </a>
                     <button
                       onClick={() => {
                         setShowProfileMenu(false);

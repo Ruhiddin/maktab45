@@ -1,12 +1,22 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { buildArchiveRankingData, normalizeArchiveQualification, normalizeArchiveStudent, type ArchiveSnapshot } from './archiveSnapshot';
+import {
+  buildArchiveRankingData,
+  buildArchiveTeacherPublicProfile,
+  buildArchiveTeacherRankingData,
+  normalizeArchiveQualification,
+  normalizeArchiveStudent,
+  normalizeArchiveTeacher,
+  normalizeArchiveTeacherRank,
+  type ArchiveSnapshot,
+} from './archiveSnapshot';
 
 export interface ArchiveSummary {
   year: number;
   filename: string;
   created_at: string;
   student_count: number;
+  teacher_count: number;
   qualification_count: number;
 }
 
@@ -31,6 +41,7 @@ export function listArchiveSummaries(): ArchiveSummary[] {
         filename: file,
         created_at: content.created_at,
         student_count: content.students?.length || 0,
+        teacher_count: content.teachers?.length || 0,
         qualification_count: content.qualifications?.length || 0,
       });
     } catch {
@@ -63,4 +74,12 @@ export function loadArchiveSnapshot(year: number | string): ArchiveSnapshot | nu
   }
 }
 
-export { buildArchiveRankingData, normalizeArchiveQualification, normalizeArchiveStudent };
+export {
+  buildArchiveRankingData,
+  buildArchiveTeacherPublicProfile,
+  buildArchiveTeacherRankingData,
+  normalizeArchiveQualification,
+  normalizeArchiveStudent,
+  normalizeArchiveTeacher,
+  normalizeArchiveTeacherRank,
+};

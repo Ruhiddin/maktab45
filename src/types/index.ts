@@ -16,6 +16,14 @@ export type BadgeType =
   | 'rising_star'
   | 'new_student';
 
+export type TeacherLeaderboardBadgeType =
+  | 'all_round_mentor'
+  | 'attendance_anchor'
+  | 'behavior_guide'
+  | 'student_reach'
+  | 'steady_presence'
+  | 'hot_week';
+
 // --- Auth ---
 
 export interface AuthToken {
@@ -39,6 +47,68 @@ export interface Teacher {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface TeacherRank {
+  teacher_id: string;
+  full_name: string;
+  subjects: string[];
+  qualification_count: number;
+  unique_students_count: number;
+  active_days_count: number;
+  category_coverage_count: number;
+  recent_activity_count: number;
+  activity_score: number;
+  trend?: 'up' | 'down' | 'flat';
+  rank_delta?: number;
+}
+
+export interface TeacherCategoryBreakdownPoint {
+  name: Exclude<Category, 'All'>;
+  count: number;
+  weighted_score: number;
+}
+
+export interface TeacherSubjectActivityPoint {
+  subject: string;
+  count: number;
+  weighted_score: number;
+}
+
+export interface TeacherMonthlyActivityPoint {
+  month: string;
+  qualification_count: number;
+  weighted_score: number;
+}
+
+export interface TeacherClassReachPoint {
+  grade: number;
+  section: string | null;
+  class_label: string;
+  students_reached: number;
+  qualification_count: number;
+}
+
+export interface TeacherValueBalance {
+  positive_count: number;
+  negative_count: number;
+  neutral_count: number;
+}
+
+export interface TeacherPublicProfile extends TeacherRank {
+  categories: TeacherCategoryBreakdownPoint[];
+  subjects_breakdown: TeacherSubjectActivityPoint[];
+  monthly_activity: TeacherMonthlyActivityPoint[];
+  class_reach: TeacherClassReachPoint[];
+  value_balance: TeacherValueBalance;
+  most_used_category: Exclude<Category, 'All'> | null;
+  top_supported_classes: Array<{
+    grade: number;
+    section: string | null;
+    class_label: string;
+    qualification_count: number;
+    students_reached: number;
+  }>;
 }
 
 // --- Admin Settings ---
@@ -128,6 +198,13 @@ export interface Badge {
   description: string;
 }
 
+export interface TeacherLeaderboardBadge {
+  type: TeacherLeaderboardBadgeType;
+  icon: string;
+  label: string;
+  description: string;
+}
+
 /** Static badge definitions for display */
 export const BADGE_DEFINITIONS: Record<BadgeType, Omit<Badge, 'type'>> = {
   hot_streak: {
@@ -154,5 +231,38 @@ export const BADGE_DEFINITIONS: Record<BadgeType, Omit<Badge, 'type'>> = {
     icon: '🆕',
     label: 'New',
     description: 'Added to the leaderboard in the last 7 days',
+  },
+};
+
+export const TEACHER_BADGE_DEFINITIONS: Record<TeacherLeaderboardBadgeType, Omit<TeacherLeaderboardBadge, 'type'>> = {
+  all_round_mentor: {
+    icon: '🧭',
+    label: 'All-Round Mentor',
+    description: 'Worked across all public qualification categories.',
+  },
+  attendance_anchor: {
+    icon: '🕘',
+    label: 'Attendance Anchor',
+    description: 'Strong attendance-focused teacher activity.',
+  },
+  behavior_guide: {
+    icon: '🛡️',
+    label: 'Behavior Guide',
+    description: 'High contribution to behavior support and discipline follow-up.',
+  },
+  student_reach: {
+    icon: '🤝',
+    label: 'Student Reach',
+    description: 'Supported a broad set of students.',
+  },
+  steady_presence: {
+    icon: '📅',
+    label: 'Steady Presence',
+    description: 'Maintained activity across many distinct days.',
+  },
+  hot_week: {
+    icon: '⚡',
+    label: 'Hot Week',
+    description: 'High teacher activity in the last 7 days.',
   },
 };

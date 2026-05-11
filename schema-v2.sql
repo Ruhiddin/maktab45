@@ -9,8 +9,9 @@
 --   2. Alters students: rename `name` → `full_name`, add `section`, `is_active`
 --   3. Alters qualifications: add `teacher_id` FK → teachers
 --   4. Replaces the `live_ranking` view with the V2 version
---   5. Sets up RLS policies for all new tables
---   6. Seeds `admin_settings` with defaults (id=1)
+--   5. Adds the `live_teacher_ranking` view for V3 teacher public recognition
+--   6. Sets up RLS policies for all new tables
+--   7. Seeds `admin_settings` with defaults (id=1)
 -- =============================================================
 
 -- Create enum for audit actor type
@@ -140,7 +141,95 @@ GROUP BY
     s.id, s.full_name, s.gender, s.grade, s.section, s.avatar_url;
 
 -- =============================================================
--- 9. RLS POLICIES — teachers table
+-- 9. CREATE live_teacher_ranking VIEW (V3: teacher public recognition)
+-- =============================================================
+DROP VIEW IF EXISTS public.live_teacher_ranking;
+
+CREATE VIEW public.live_teacher_ranking AS
+WITH qualification_events AS (
+    SELECT
+        q.id,
+        q.teacher_id,
+        q.student_id,
+        q.category,
+        q.subject,
+        q.value,
+        q.created_at,
+        s.grade,
+        s.section,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                q.teacher_id,
+                q.student_id,
+                ((q.created_at AT TIME ZONE 'UTC')::date)
+            ORDER BY q.created_at ASC, q.id ASC
+        ) AS same_day_student_seq
+    FROM
+        public.qualifications q
+    INNER JOIN
+        public.students s ON s.id = q.student_id
+    WHERE
+        q.teacher_id IS NOT NULL
+), counted_events AS (
+    SELECT
+        teacher_id,
+        student_id,
+        category,
+        subject,
+        value,
+        created_at,
+        grade,
+        section,
+        CASE
+            WHEN category = 'Academic' THEN 1.00
+            WHEN category = 'Extracurricular' THEN 1.05
+            WHEN category = 'Attendance' THEN 1.20
+            WHEN category = 'Behavior' THEN 1.25
+            ELSE 1.00
+        END AS category_weight
+    FROM
+        qualification_events
+    WHERE
+        same_day_student_seq <= 3
+), teacher_aggregates AS (
+    SELECT
+        teacher_id,
+        COUNT(*)::INTEGER AS qualification_count,
+        COUNT(DISTINCT student_id)::INTEGER AS unique_students_count,
+        COUNT(DISTINCT ((created_at AT TIME ZONE 'UTC')::date))::INTEGER AS active_days_count,
+        COUNT(DISTINCT category)::INTEGER AS category_coverage_count,
+        COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days')::INTEGER AS recent_activity_count,
+        COALESCE(SUM(category_weight), 0)::NUMERIC AS weighted_event_credit
+    FROM
+        counted_events
+    GROUP BY
+        teacher_id
+)
+SELECT
+    t.id AS teacher_id,
+    t.full_name,
+    t.subjects,
+    COALESCE(a.qualification_count, 0) AS qualification_count,
+    COALESCE(a.unique_students_count, 0) AS unique_students_count,
+    COALESCE(a.active_days_count, 0) AS active_days_count,
+    COALESCE(a.category_coverage_count, 0) AS category_coverage_count,
+    COALESCE(a.recent_activity_count, 0) AS recent_activity_count,
+    ROUND(
+        COALESCE(a.weighted_event_credit, 0)
+        + (COALESCE(a.unique_students_count, 0) * 0.20)
+        + (GREATEST(COALESCE(a.category_coverage_count, 0) - 1, 0) * 0.35)
+        + (COALESCE(a.active_days_count, 0) * 0.15),
+        2
+    ) AS activity_score
+FROM
+    public.teachers t
+LEFT JOIN
+    teacher_aggregates a ON a.teacher_id = t.id
+WHERE
+    t.is_active = true;
+
+-- =============================================================
+-- 10. RLS POLICIES — teachers table
 -- =============================================================
 ALTER TABLE public.teachers ENABLE ROW LEVEL SECURITY;
 
@@ -163,7 +252,7 @@ CREATE POLICY "Deny anon delete to teachers"
     USING (false);
 
 -- =============================================================
--- 10. RLS POLICIES — admin_settings table
+-- 11. RLS POLICIES — admin_settings table
 -- =============================================================
 ALTER TABLE public.admin_settings ENABLE ROW LEVEL SECURITY;
 
@@ -186,7 +275,7 @@ CREATE POLICY "Deny anon delete to admin_settings"
     USING (false);
 
 -- =============================================================
--- 11. RLS POLICIES — audit_log table (APPEND-ONLY)
+-- 12. RLS POLICIES — audit_log table (APPEND-ONLY)
 -- =============================================================
 ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
 
@@ -207,7 +296,7 @@ CREATE POLICY "Deny anon insert to audit_log"
     WITH CHECK (false);
 
 -- =============================================================
--- 12. SEED admin_settings with default row (id=1)
+-- 13. SEED admin_settings with default row (id=1)
 -- =============================================================
 -- Uses ON CONFLICT to be idempotent — safe to run multiple times
 INSERT INTO public.admin_settings (id, school_name, available_sections, current_academic_year)

@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TeacherDetailView from '../components/TeacherDetailView';
+import { getFallbackPublicSettings } from '../lib/publicSettings';
+import { listArchiveYears } from '../lib/archiveData';
+import { resolveLocale } from '../lib/i18n';
+
+export const prerender = true;
+
+const { school_name: schoolName, current_academic_year: academicYear } = getFallbackPublicSettings();
+const archiveYears = listArchiveYears();
+const locale = resolveLocale(Astro.url);
+---
+
+<Layout
+  title="Teacher Profile"
+  description="View public teacher activity recognition and archived teacher profile snapshots."
+  schoolName={schoolName}
+  locale={locale}
+>
+  <TeacherDetailView
+    client:load
+    locale={locale}
+    pathname={Astro.url.pathname}
+    teacherId={null}
+    archiveYears={archiveYears}
+    currentAcademicYear={academicYear}
+  />
+</Layout>

@@ -57,3 +57,20 @@ export function buildClassHref(gradeSection: string, selectedYear?: string | nul
   }
   return `${withBasePath('/class')}?${params.toString()}`;
 }
+
+export function buildTeacherLeaderboardHref(selectedYear?: string | null): string {
+  const params = new URLSearchParams();
+  if (selectedYear) {
+    params.set('year', selectedYear);
+  }
+  const query = params.toString();
+  return query ? `${withBasePath('/teachers')}?${query}` : withBasePath('/teachers');
+}
+
+export function buildTeacherProfileHref(teacherId: string, selectedYear?: string | null): string {
+  const params = new URLSearchParams({ id: teacherId });
+  if (selectedYear) {
+    params.set('year', selectedYear);
+  }
+  return `${withBasePath('/teacher-profile')}?${params.toString()}`;
+}

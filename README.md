@@ -1,8 +1,8 @@
-# School Leaderboard V2
+# School Leaderboard V3
 
-School Leaderboard V2 is the current production-oriented version of the project. It adds role-based admin and teacher workflows, bulk imports, audit logging, yearly archiving, richer leaderboard visuals, and a public placeholder mode for demos without Supabase.
+School Leaderboard V3 is the current production-oriented version of the project. It keeps the V2 admin, teacher, archive, and placeholder-mode foundations, and adds a public teacher recognition layer with a dedicated teacher leaderboard and public teacher detail pages.
 
-The active product spec is [V2-SPEC.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/V2-SPEC.md:1). [PROJECT-SPEC.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/PROJECT-SPEC.md:1) is now a V1 historical reference only.
+The active product specs are [V2-SPEC.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/V2-SPEC.md:1) for the base platform and [V3-SPEC.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/V3-SPEC.md:1) for the teacher public leaderboard layer. [PROJECT-SPEC.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/PROJECT-SPEC.md:1) is a historical pointer only.
 
 ## Stack
 
@@ -13,13 +13,42 @@ The active product spec is [V2-SPEC.md](/home/ruhiddin/Documents/Projects/school
 - Framer Motion for UI motion
 - CSV import pipeline for the hosted Edge deployment
 
-## V2 Features
+## V3 Features
 
 - Public leaderboard with podium, badges, rank delta, filters, archive browsing, class detail pages, and student detail pages
+- Public teacher leaderboard at `/teachers` with podium, list/card toggle, filters, archive-year switching, and public teacher badges
+- Public teacher detail page at `/teacher-profile?id=<teacher_id>` with charts, top support summaries, and archive-aware fallback states
 - Admin flow at `/admin` for student import, teacher import, audit log review, settings, and yearly archive
 - Teacher flow at `/teacher` for named-teacher login, qualification entry, recent activity, undo, and password change
 - Public placeholder mode that runs without Supabase using in-memory mock data
+- Logic and UI verification for teacher ranking via `npm run test:teacher-logic` and `npm run test:v3-teacher-ui`
 - End-to-end V2 smoke coverage via `npm run test:e2e`
+
+## Teacher Public Leaderboard Overview
+
+V3 adds a second public leaderboard surface for teachers. It is read-only, public-safe, and designed to reward broad student-support activity rather than raw student score totals.
+
+Public V3 routes:
+
+- `/teachers`
+- `/teacher-profile?id=<teacher_id>`
+
+Usage notes:
+
+- student leaderboard remains the default public landing flow
+- teacher leaderboard links preserve `lang` and `year` when moving between live and archive views
+- teacher profile links are query-param based so new teacher imports do not require new static routes
+- placeholder mode supports public teacher browsing for demos, but live teacher data still depends on Supabase-backed public reads
+
+Teacher ranking logic summary:
+
+- score is activity-based, not student-score-based
+- `Attendance` and `Behavior` carry higher weights than `Academic`
+- qualification sign does not affect teacher activity credit
+- only the first 3 same-day qualifications per teacher/student pair count toward ranking
+- breadth bonuses reward unique students, category coverage, and active days
+
+The canonical ranking contract is documented in [V3-SPEC.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/V3-SPEC.md:1), and the current implementation lives in [src/lib/teacherRanking.ts](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/src/lib/teacherRanking.ts:1).
 
 ## Setup
 
@@ -168,6 +197,8 @@ For archive cutover, also provision:
 
 - a Supabase Storage bucket named `archives`
 - the `admin-archive` function writes yearly archive snapshots there as JSON objects
+- each archive snapshot now includes `students`, `teachers`, `qualifications`, `rankings`, and `teacher_ranking`
+- archived teacher leaderboard reads prefer the persisted `teacher_ranking` payload and only fall back to recomputing from archived teachers plus qualifications when older snapshots do not contain teacher ranking data
 - this replaces the old Node filesystem write into `public/archives` for the hosted Edge target
 
 Optional but recommended:
@@ -279,20 +310,49 @@ Notes:
 | `npm run build` | Production build |
 | `npm run preview` | Preview the production build |
 | `npm run perf:leaderboard` | Run the leaderboard performance benchmark |
+| `npm run test:teacher-logic` | Verify teacher ranking math and edge cases |
+| `npm run test:v3-teacher-ui` | Verify V3 teacher route and navigation wiring |
 | `npm run test:e2e` | Run the V2 smoke suite |
 
 `npm run test:e2e` boots Astro locally, exercises the public V2 flows in placeholder mode, and runs a browser render matrix for available local browsers. Firefox and Safari checks are conditional on the host having a usable browser installation.
 
+The V3 teacher verification scripts are intentionally lightweight:
+
+- `test:teacher-logic` checks the real ranking helpers for weights, anti-spam caps, inactive-teacher exclusion, qualification-driven rank changes, and broader-support recognition
+- `test:v3-teacher-ui` checks static-safe route generation plus teacher link and archive-year wiring in the built output
+- neither script certifies live Supabase data by itself
+
+## Admin And Archive Notes
+
+Teacher public ranking is derived data, not an admin-managed field.
+
+- admins can import teachers, update teacher names/subjects, deactivate teachers, and manage the qualification workflows that feed ranking inputs
+- admins do not manually edit `activity_score`, badge outcomes, or public rank order
+- public teacher ranking is recalculated from qualification activity and filtered by active teachers in live mode
+
+Archive behavior for V3:
+
+- the yearly archive flow snapshots teacher leaderboard data alongside student leaderboard data
+- new snapshots persist `teacher_ranking` directly from the live public ranking view at archive time
+- older archives without teacher ranking data remain readable through archive normalization fallbacks, but they may show reduced teacher-history fidelity
+
 ## Key Paths
 
 - [V2-SPEC.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/V2-SPEC.md:1)
+- [V3-SPEC.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/V3-SPEC.md:1)
 - [V2-TODO.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/V2-TODO.md:1)
+- [V3-TODO.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/V3-TODO.md:1)
 - [SUPABASE-EDGE-BASELINE.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/SUPABASE-EDGE-BASELINE.md:1)
 - [SUPABASE-EDGE-MIGRATION-PLAN.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/SUPABASE-EDGE-MIGRATION-PLAN.md:1)
 - [SUPABASE-EDGE-MIGRATION-TODO.md](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/SUPABASE-EDGE-MIGRATION-TODO.md:1)
 - [schema-v2.sql](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/schema-v2.sql:1)
 - [src/pages/admin/index.astro](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/src/pages/admin/index.astro:1)
 - [src/pages/teacher/index.astro](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/src/pages/teacher/index.astro:1)
+- [src/pages/teachers.astro](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/src/pages/teachers.astro:1)
+- [src/pages/teacher-profile.astro](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/src/pages/teacher-profile.astro:1)
+- [src/lib/teacherRanking.ts](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/src/lib/teacherRanking.ts:1)
+- [scripts/test-teacher-ranking.ts](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/scripts/test-teacher-ranking.ts:1)
+- [scripts/verify-v3-teacher-ui.mjs](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/scripts/verify-v3-teacher-ui.mjs:1)
 - [scripts/e2e-v2.mjs](/home/ruhiddin/Documents/Projects/school-leaderboard-fergana-45/scripts/e2e-v2.mjs:1)
 
 ## Deployment Notes

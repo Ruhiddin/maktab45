@@ -11,6 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "perf:leaderboard": "node scripts/benchmark-leaderboard.mjs",
+    "test:teacher-logic": "node_modules/esbuild/bin/esbuild scripts/test-teacher-ranking.ts --bundle --platform=node --format=esm --outfile=.tmp-tests/test-teacher-ranking.mjs && node .tmp-tests/test-teacher-ranking.mjs",
+    "test:v3-teacher-ui": "npm run build && node scripts/verify-v3-teacher-ui.mjs",
     "test:e2e": "node scripts/e2e-v2.mjs"
   },
   "dependencies": {

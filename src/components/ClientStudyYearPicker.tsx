@@ -7,6 +7,7 @@ type Props = {
   currentAcademicYear: string;
   archiveYears: number[];
   selectedYear?: string | null;
+  preservedSearchParams?: URLSearchParams | string | null;
 };
 
 export default function ClientStudyYearPicker({
@@ -15,16 +16,35 @@ export default function ClientStudyYearPicker({
   currentAcademicYear,
   archiveYears,
   selectedYear = null,
+  preservedSearchParams = null,
 }: Props) {
   const m = getMessages(locale);
+  const buildHref = (year?: string | null) => {
+    const params = new URLSearchParams(
+      typeof preservedSearchParams === 'string'
+        ? preservedSearchParams
+        : preservedSearchParams instanceof URLSearchParams
+          ? preservedSearchParams.toString()
+          : ''
+    );
+
+    if (year) {
+      params.set('year', year);
+    } else {
+      params.delete('year');
+    }
+
+    return buildLocaleHref(pathname, locale, params);
+  };
+
   const options = [
     {
-      href: buildLocaleHref(pathname, locale),
+      href: buildHref(null),
       label: `${currentAcademicYear} (${m.public.currentYear})`,
       active: !selectedYear,
     },
     ...archiveYears.map((year) => ({
-      href: buildLocaleHref(pathname, locale, `year=${year}`),
+      href: buildHref(String(year)),
       label: `${m.public.archiveLabel} ${year}`,
       active: selectedYear === String(year),
     })),

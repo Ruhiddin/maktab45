@@ -187,6 +187,7 @@ export default function StudentDetailView({
           currentAcademicYear={currentAcademicYear}
           archiveYears={archiveYears}
           selectedYear={selectedYear}
+          preservedSearchParams={activeStudentId ? `id=${activeStudentId}` : null}
         />
       </div>
 

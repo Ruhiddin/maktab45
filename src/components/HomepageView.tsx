@@ -5,7 +5,7 @@ import { buildLocaleHref, getMessages, resolveRuntimeLocale, type Locale } from 
 import { isPlaceholderMode, MOCK_QUALIFICATIONS, MOCK_RANKINGS, MOCK_ADMIN_SETTINGS } from '../lib/mockData';
 import { fetchPublicSettingsDirect } from '../lib/publicData';
 import { supabase } from '../lib/supabase';
-import { withBasePath } from '../lib/utils';
+import { buildTeacherLeaderboardHref, withBasePath } from '../lib/utils';
 import type { StudentRank } from '../types';
 
 type Props = {
@@ -210,6 +210,21 @@ export default function HomepageView({
         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
           {selectedYear ? `${m.public.archiveLabel} ${selectedYear}` : academicYear} {m.public.homepageSubtitle}
         </p>
+        <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-white/10 bg-slate-950/35 p-1.5 shadow-[0_12px_30px_rgba(15,23,42,0.2)] backdrop-blur">
+          <span className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+            {m.public.leaderboardSwitch}
+          </span>
+          <span className="rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+            {m.public.studentLeaderboard}
+          </span>
+          <a
+            href={buildLocaleHref(buildTeacherLeaderboardHref(selectedYear), activeLocale)}
+            className="rounded-full px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white"
+            title={m.public.teacherLeaderboardHint}
+          >
+            {m.public.teacherLeaderboard}
+          </a>
+        </div>
         {selectedYear && (
           <p className="mt-4 text-sm font-medium text-amber-700 dark:text-amber-300">
             {m.public.viewingArchive} {selectedYear}. {m.public.archiveHint}

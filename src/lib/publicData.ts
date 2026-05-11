@@ -1,6 +1,12 @@
 import { isPlaceholderMode, MOCK_ADMIN_SETTINGS, MOCK_QUALIFICATIONS, MOCK_TEACHERS, MOCK_RANKINGS } from './mockData';
 import { supabase } from './supabase';
-import type { Qualification } from '../types';
+import type { Qualification, TeacherPublicProfile, TeacherRank } from '../types';
+import { buildArchiveTeacherPublicProfile, buildArchiveTeacherRankingData, type ArchiveSnapshot } from './archiveSnapshot';
+import {
+  adaptLiveTeacherRankingRow,
+  buildTeacherPublicProfile,
+  buildTeacherRankingFromQualifications,
+} from './teacherRanking';
 
 type HoverQualification = Pick<
   Qualification,
@@ -173,4 +179,85 @@ export async function fetchMostActiveTeacherForClass(grade: number, section?: st
     teacher,
     qualification_count: maxCount,
   };
+}
+
+export function normalizeArchiveTeacherRanking(archive: ArchiveSnapshot | null): TeacherRank[] {
+  return buildArchiveTeacherRankingData(archive);
+}
+
+export function normalizeArchiveTeacherProfile(
+  archive: ArchiveSnapshot | null,
+  teacherId: string
+): TeacherPublicProfile | null {
+  return buildArchiveTeacherPublicProfile(archive, teacherId);
+}
+
+export async function fetchPublicTeacherRankingDirect(): Promise<TeacherRank[]> {
+  if (isPlaceholderMode()) {
+    return buildTeacherRankingFromQualifications(MOCK_TEACHERS, MOCK_QUALIFICATIONS);
+  }
+
+  const { data } = await supabase
+    .from('live_teacher_ranking')
+    .select('*')
+    .order('activity_score', { ascending: false })
+    .order('unique_students_count', { ascending: false })
+      .order('category_coverage_count', { ascending: false })
+      .order('recent_activity_count', { ascending: false })
+      .order('full_name', { ascending: true });
+
+  return ((data || []) as any[]).map(adaptLiveTeacherRankingRow);
+}
+
+export async function fetchPublicTeacherProfileDirect(teacherId: string): Promise<TeacherPublicProfile | null> {
+  if (isPlaceholderMode()) {
+    const teacher = MOCK_TEACHERS.find((entry) => entry.id === teacherId && entry.is_active);
+    if (!teacher) return null;
+    const rankings = buildTeacherRankingFromQualifications(MOCK_TEACHERS, MOCK_QUALIFICATIONS);
+    return buildTeacherPublicProfile(teacher, rankings, MOCK_QUALIFICATIONS, MOCK_RANKINGS.map((student) => ({
+      id: student.student_id,
+      grade: student.grade,
+      section: student.section,
+    })));
+  }
+
+  const [rankingResult, teacherResult, qualificationsResult, studentsResult] = await Promise.all([
+    supabase
+      .from('live_teacher_ranking')
+      .select('*')
+      .eq('teacher_id', teacherId)
+      .single(),
+    supabase
+      .from('teachers')
+      .select('id, full_name, subjects, is_active')
+      .eq('id', teacherId)
+      .eq('is_active', true)
+      .single(),
+    supabase
+      .from('qualifications')
+      .select('id, student_id, teacher_id, category, subject, value, teacher_note, created_at')
+      .eq('teacher_id', teacherId)
+      .order('created_at', { ascending: false })
+      .limit(500),
+    supabase
+      .from('students')
+      .select('id, grade, section')
+      .eq('is_active', true),
+  ]);
+
+  if (rankingResult.error || !rankingResult.data || teacherResult.error || !teacherResult.data) {
+    return null;
+  }
+
+  return buildTeacherPublicProfile(
+    {
+      id: String(teacherResult.data.id),
+      full_name: teacherResult.data.full_name ?? 'Unknown Teacher',
+      subjects: Array.isArray(teacherResult.data.subjects) ? teacherResult.data.subjects.map(String) : [],
+      is_active: teacherResult.data.is_active ?? true,
+    },
+    [adaptLiveTeacherRankingRow(rankingResult.data)],
+    ((qualificationsResult.data || []) as Qualification[]),
+    ((studentsResult.data || []) as Array<{ id: string; grade: number; section: string | null }>)
+  );
 }

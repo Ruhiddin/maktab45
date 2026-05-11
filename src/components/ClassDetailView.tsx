@@ -130,6 +130,7 @@ export default function ClassDetailView({
           currentAcademicYear={currentAcademicYear}
           archiveYears={archiveYears}
           selectedYear={selectedYear}
+          preservedSearchParams={activeGradeSection ? `grade=${activeGradeSection}` : null}
         />
       </div>
 

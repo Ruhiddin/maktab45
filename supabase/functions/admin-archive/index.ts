@@ -52,6 +52,14 @@ Deno.serve(async (request) => {
       throw new Error(qualificationsError.message);
     }
 
+    const { data: teachers, error: teachersError } = await serviceClient
+      .from('teachers')
+      .select('id, full_name, subjects, is_active, created_at, updated_at')
+      .order('full_name');
+    if (teachersError) {
+      throw new Error(teachersError.message);
+    }
+
     const { data: rankings, error: rankingsError } = await serviceClient
       .from('live_ranking')
       .select('*')
@@ -60,12 +68,26 @@ Deno.serve(async (request) => {
       throw new Error(rankingsError.message);
     }
 
+    const { data: teacherRanking, error: teacherRankingError } = await serviceClient
+      .from('live_teacher_ranking')
+      .select('*')
+      .order('activity_score', { ascending: false })
+      .order('unique_students_count', { ascending: false })
+      .order('category_coverage_count', { ascending: false })
+      .order('recent_activity_count', { ascending: false })
+      .order('full_name', { ascending: true });
+    if (teacherRankingError) {
+      throw new Error(teacherRankingError.message);
+    }
+
     const archive = {
       year: currentYear,
       created_at: new Date().toISOString(),
       students: students ?? [],
+      teachers: teachers ?? [],
       qualifications: qualifications ?? [],
       rankings: rankings ?? [],
+      teacher_ranking: teacherRanking ?? [],
     };
 
     const archivePath = `${currentYear}/${currentYear}_archive.json`;
