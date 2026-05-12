@@ -212,7 +212,7 @@ export default function StudentDetail({ locale, student, qualifications, ranking
   }, [ranking, student.created_at, student.id, qualifications, classmates]);
 
   return (
-    <div className="max-w-5xl mx-auto p-4 space-y-8">
+    <div className="max-w-5xl mx-auto p-4 space-y-8 eboard:space-y-5">
       {/* Back button */}
       <a href={buildYearHref('/', selectedYear)} className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors font-medium">
         <ArrowLeft className="w-4 h-4" />
@@ -229,9 +229,9 @@ export default function StudentDetail({ locale, student, qualifications, ranking
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row items-center gap-6 p-8 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+        className="flex flex-col md:flex-row items-center gap-6 eboard:gap-4 p-8 eboard:p-5 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
       >
-        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-4xl font-black shadow-lg flex-shrink-0">
+        <div className="w-28 h-28 eboard:w-20 eboard:h-20 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-4xl eboard:text-3xl font-black shadow-lg flex-shrink-0">
           {student.avatar_url ? (
             <img src={student.avatar_url} alt={student.full_name} className="w-full h-full rounded-full object-cover" />
           ) : (
@@ -239,12 +239,12 @@ export default function StudentDetail({ locale, student, qualifications, ranking
           )}
         </div>
         <div className="flex-1 text-center md:text-left">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">{student.full_name}</h1>
+          <h1 className="text-3xl eboard:text-2xl md:text-4xl eboard:md:text-3xl font-extrabold text-gray-900 dark:text-white">{student.full_name}</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">{m.public.gradeSingle} {formatGradeSection(student.grade, student.section)} · {student.gender === 'male' ? m.public.male : m.public.female}</p>
         </div>
-        <div className="flex flex-col items-center gap-1 px-8 py-4 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
+        <div className="flex flex-col items-center gap-1 px-8 eboard:px-5 py-4 eboard:py-3 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg">
           <span className="text-sm font-medium opacity-80">{m.studentDetail.totalScore}</span>
-          <span className="text-4xl font-black">{totalScore > 0 ? `+${totalScore}` : totalScore}</span>
+          <span className="text-4xl eboard:text-3xl font-black">{totalScore > 0 ? `+${totalScore}` : totalScore}</span>
           {ranking?.trend === 'up' && <TrendingUp className="w-5 h-5 text-green-300" />}
           {ranking?.trend === 'down' && <TrendingDown className="w-5 h-5 text-red-300" />}
           {ranking?.trend === 'flat' && <Minus className="w-5 h-5 text-gray-300" />}
@@ -270,7 +270,7 @@ export default function StudentDetail({ locale, student, qualifications, ranking
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-5 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-5 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
           <h2 className="text-lg font-bold text-gray-800 dark:text-white mb-3">{m.studentDetail.badges}</h2>
           <div className="flex flex-wrap gap-2">
@@ -281,19 +281,19 @@ export default function StudentDetail({ locale, student, qualifications, ranking
         </motion.div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 eboard:gap-5">
         {/* Radar Chart — Skill Web */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+          <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-4 eboard:mb-3 flex items-center gap-2">
             <Star className="w-5 h-5 text-yellow-500" />
             {m.studentDetail.skillWeb}
           </h2>
-          <div className="w-full h-72">
+          <div className="w-full h-72 eboard:h-56">
             <ResponsiveContainer>
               <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
                 <PolarGrid stroke="#e2e8f0" />
@@ -317,19 +317,19 @@ export default function StudentDetail({ locale, student, qualifications, ranking
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+          <div className="flex items-center justify-between gap-3 mb-4 eboard:mb-3">
+            <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-green-500" />
               {m.studentDetail.progress}
             </h2>
-            <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 eboard:p-0.5">
               {(['7d', '30d', 'all'] as Period[]).map(p => (
                 <button
                   key={p}
                   onClick={() => setPeriod(p)}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  className={`px-4 eboard:px-3 py-2 eboard:py-1.5 rounded-xl text-sm eboard:text-[13px] font-semibold transition-all ${
                     period === p
                       ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/20'
                       : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -340,7 +340,7 @@ export default function StudentDetail({ locale, student, qualifications, ranking
               ))}
             </div>
           </div>
-          <div className="w-full h-64">
+          <div className="w-full h-64 eboard:h-52">
             <ResponsiveContainer>
               <AreaChart data={progressData}>
                 <defs>
@@ -367,14 +367,14 @@ export default function StudentDetail({ locale, student, qualifications, ranking
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 eboard:gap-5">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+          <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-sky-500" />
             {m.studentDetail.subjectWeb}
           </h2>
@@ -382,9 +382,9 @@ export default function StudentDetail({ locale, student, qualifications, ranking
             {m.studentDetail.strongestSubjects}
           </p>
           {subjectRadarData.length === 0 ? (
-            <p className="text-gray-500 text-center py-16">{m.studentDetail.noSubjectActivity}</p>
+            <p className="text-gray-500 text-center py-16 eboard:py-10">{m.studentDetail.noSubjectActivity}</p>
           ) : (
-            <div className="w-full h-72">
+            <div className="w-full h-72 eboard:h-56">
               <ResponsiveContainer>
                 <RadarChart data={subjectRadarData} cx="50%" cy="50%" outerRadius="72%">
                   <PolarGrid stroke="#dbeafe" />
@@ -408,16 +408,16 @@ export default function StudentDetail({ locale, student, qualifications, ranking
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+          <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-emerald-500" />
             {m.studentDetail.categoryBalance}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             {m.studentDetail.categoryBalanceHint}
           </p>
-          <div className="w-full h-72">
+          <div className="w-full h-72 eboard:h-56">
             <ResponsiveContainer>
               <BarChart data={categoryBalanceData} layout="vertical" barCategoryGap="20%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
@@ -446,9 +446,9 @@ export default function StudentDetail({ locale, student, qualifications, ranking
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+          <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
             <Activity className="w-5 h-5 text-violet-500" />
             {m.studentDetail.monthlyMomentum}
           </h2>
@@ -456,9 +456,9 @@ export default function StudentDetail({ locale, student, qualifications, ranking
             {m.studentDetail.monthlyMomentumHint}
           </p>
           {monthlyMomentumData.length === 0 ? (
-            <p className="text-gray-500 text-center py-16">{m.studentDetail.noMonthlyActivity}</p>
+            <p className="text-gray-500 text-center py-16 eboard:py-10">{m.studentDetail.noMonthlyActivity}</p>
           ) : (
-            <div className="w-full h-72">
+            <div className="w-full h-72 eboard:h-56">
               <ResponsiveContainer>
                 <BarChart data={monthlyMomentumData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -493,9 +493,9 @@ export default function StudentDetail({ locale, student, qualifications, ranking
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+        className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
       >
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+        <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-4 eboard:mb-3 flex items-center gap-2">
           <Zap className="w-5 h-5 text-amber-500" />
           {m.studentDetail.recentMilestones}
           <span className="text-sm font-normal text-gray-500">{m.studentDetail.milestoneHint}</span>

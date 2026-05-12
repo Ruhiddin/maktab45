@@ -142,8 +142,8 @@ export default function TeacherDetailView({
   );
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12">
-      <div className="max-w-5xl mx-auto px-4 mb-6 flex justify-center">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12 eboard:py-6">
+      <div className="max-w-5xl mx-auto px-4 mb-6 eboard:mb-4 flex justify-center">
         <ClientStudyYearPicker
           pathname={pathname}
           locale={activeLocale}
@@ -156,7 +156,7 @@ export default function TeacherDetailView({
 
       {loading ? (
         <div className="max-w-4xl mx-auto px-4">
-          <div className="rounded-3xl border border-gray-200/70 bg-white/60 px-6 py-16 text-center shadow-lg backdrop-blur-md dark:border-gray-800 dark:bg-black/40">
+          <div className="rounded-3xl border border-gray-200/70 bg-white/60 px-6 eboard:px-5 py-16 eboard:py-10 text-center shadow-lg backdrop-blur-md dark:border-gray-800 dark:bg-black/40">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-indigo-500/30 border-t-indigo-500" />
           </div>
         </div>
@@ -169,7 +169,7 @@ export default function TeacherDetailView({
         />
       ) : (
         <div className="max-w-4xl mx-auto px-4">
-          <div className="rounded-[2rem] border border-white/10 bg-slate-900/75 px-8 py-12 text-center shadow-[0_24px_80px_rgba(15,23,42,0.32)] backdrop-blur">
+          <div className="rounded-[2rem] border border-white/10 bg-slate-900/75 px-8 eboard:px-6 py-12 eboard:py-8 text-center shadow-[0_24px_80px_rgba(15,23,42,0.32)] backdrop-blur">
             {archiveState === 'missing' ? (
               <>
                 <p className="text-xs font-semibold uppercase tracking-[0.32em] text-amber-300">

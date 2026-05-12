@@ -232,7 +232,7 @@ export default function Leaderboard({
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-4 space-y-8">
+    <div className="max-w-5xl mx-auto p-4 eboard:pt-2 space-y-8 eboard:space-y-5">
       <FilterBar
         locale={locale}
         gradeFilter={gradeFilter}
@@ -292,12 +292,12 @@ export default function Leaderboard({
       />
 
       {hasNoActiveStudents ? (
-        <div className="rounded-3xl border border-dashed border-gray-300 dark:border-gray-700 bg-white/50 dark:bg-black/40 px-6 py-14 text-center shadow-lg">
+        <div className="rounded-3xl border border-dashed border-gray-300 dark:border-gray-700 bg-white/50 dark:bg-black/40 px-6 eboard:px-5 py-14 eboard:py-9 text-center shadow-lg">
           <p className="text-lg font-semibold text-gray-900 dark:text-white">{m.public.noActiveStudents}</p>
           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{m.public.noActiveStudentsHint}</p>
         </div>
       ) : hasNoFilteredStudents ? (
-        <div className="rounded-3xl border border-dashed border-gray-300 dark:border-gray-700 bg-white/50 dark:bg-black/40 px-6 py-14 text-center shadow-lg">
+        <div className="rounded-3xl border border-dashed border-gray-300 dark:border-gray-700 bg-white/50 dark:bg-black/40 px-6 eboard:px-5 py-14 eboard:py-9 text-center shadow-lg">
           <p className="text-lg font-semibold text-gray-900 dark:text-white">{m.public.noFilteredStudents}</p>
           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{m.public.noFilteredStudentsHint}</p>
         </div>
@@ -314,8 +314,8 @@ export default function Leaderboard({
           <LeaderboardCardSkeleton />
         )
       ) : view === 'list' ? (
-      <div className="bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl p-2 sm:p-4 shadow-xl border border-gray-100 dark:border-gray-800 overflow-x-auto">
-        <div className="hidden sm:grid grid-cols-12 gap-4 px-4 py-3 text-sm font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800 min-w-0">
+      <div className="bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl p-2 sm:p-4 eboard:sm:p-3 shadow-xl border border-gray-100 dark:border-gray-800 overflow-x-auto">
+        <div className="hidden sm:grid grid-cols-12 gap-4 eboard:gap-3 px-4 eboard:px-3 py-3 eboard:py-2 text-sm eboard:text-[13px] font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800 min-w-0">
           <div className="col-span-1 text-center">Rank</div>
           <div className="col-span-6">Student</div>
           <div className="col-span-2 text-center">Grade</div>
@@ -383,7 +383,7 @@ export default function Leaderboard({
         </div>
       </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 eboard:lg:grid-cols-5 gap-3 eboard:gap-2.5">
           {deferredFilteredData.map((student, index) => {
             const actualRank = index + 1;
             return (
@@ -419,19 +419,19 @@ export default function Leaderboard({
 
 function LeaderboardListSkeleton() {
   return (
-    <div className="bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl p-2 sm:p-4 shadow-xl border border-gray-100 dark:border-gray-800 overflow-x-auto">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+    <div className="bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl p-2 sm:p-4 eboard:sm:p-3 shadow-xl border border-gray-100 dark:border-gray-800 overflow-x-auto">
+      <div className="flex items-center justify-between px-4 eboard:px-3 py-3 eboard:py-2 border-b border-gray-200 dark:border-gray-800">
         <div>
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">Calculating badges...</p>
           <p className="text-xs text-gray-500 dark:text-gray-400">Preparing leaderboard highlights for the current filters.</p>
         </div>
-        <div className="w-5 h-5 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+        <div className="w-5 h-5 eboard:w-4 eboard:h-4 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
-      <div className="space-y-3 mt-4">
+      <div className="space-y-3 eboard:space-y-2 mt-4 eboard:mt-3">
         {Array.from({ length: 5 }).map((_, index) => (
           <div
             key={index}
-            className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center rounded-2xl border border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 px-4 py-4"
+            className="grid grid-cols-1 sm:grid-cols-12 gap-3 eboard:gap-2 items-center rounded-2xl border border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-900/60 px-4 eboard:px-3 py-4 eboard:py-3"
           >
             <div className="hidden sm:block sm:col-span-1 h-5 w-10 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
             <div className="sm:col-span-6 space-y-2">
@@ -454,14 +454,14 @@ function LeaderboardListSkeleton() {
 function LeaderboardCardSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-black/50 backdrop-blur-sm px-4 py-3 shadow-xl flex items-center justify-between">
+      <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-black/50 backdrop-blur-sm px-4 eboard:px-3 py-3 eboard:py-2 shadow-xl flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">Calculating badges...</p>
           <p className="text-xs text-gray-500 dark:text-gray-400">Preparing student highlights for the current view.</p>
         </div>
-        <div className="w-5 h-5 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+        <div className="w-5 h-5 eboard:w-4 eboard:h-4 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 eboard:lg:grid-cols-5 gap-3 eboard:gap-2.5">
         {Array.from({ length: 8 }).map((_, index) => (
           <div
             key={index}

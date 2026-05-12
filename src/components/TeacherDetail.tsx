@@ -59,7 +59,7 @@ export default function TeacherDetail({ locale, profile, rankPosition, selectedY
   }));
 
   return (
-    <div className="max-w-6xl mx-auto px-4 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 space-y-8 eboard:space-y-5">
       <a
         href={summaryHref}
         className="inline-flex items-center gap-2 text-indigo-200 transition-colors hover:text-white"
@@ -71,15 +71,15 @@ export default function TeacherDetail({ locale, profile, rankPosition, selectedY
       <motion.section
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-[2rem] border border-white/10 bg-slate-900/82 px-6 py-8 shadow-[0_24px_80px_rgba(15,23,42,0.32)] backdrop-blur sm:px-8 sm:py-10"
+        className="rounded-[2rem] border border-white/10 bg-slate-900/82 px-6 eboard:px-5 py-8 eboard:py-6 shadow-[0_24px_80px_rgba(15,23,42,0.32)] backdrop-blur sm:px-8 sm:py-10 eboard:sm:px-6 eboard:sm:py-7"
       >
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex flex-col gap-6 eboard:gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.32em] text-indigo-300">
               {m.teacherDetail.eyebrow}
             </p>
-            <h1 className="mt-4 break-words text-3xl font-black text-white md:text-5xl">{profile.full_name}</h1>
-            <p className="mt-3 break-words text-sm leading-7 text-slate-300 md:text-base">
+            <h1 className="mt-4 eboard:mt-3 break-words text-3xl eboard:text-2xl font-black text-white md:text-5xl eboard:md:text-4xl">{profile.full_name}</h1>
+            <p className="mt-3 eboard:mt-2 break-words text-sm leading-7 eboard:leading-6 text-slate-300 md:text-base eboard:md:text-sm">
               {profile.subjects.length ? profile.subjects.join(', ') : m.teacherDetail.generalSupport}
             </p>
             {selectedYear ? (
@@ -88,7 +88,7 @@ export default function TeacherDetail({ locale, profile, rankPosition, selectedY
               </p>
             ) : null}
             {badges.length > 0 ? (
-              <div className="mt-6 flex flex-wrap gap-2">
+                <div className="mt-6 eboard:mt-4 flex flex-wrap gap-2 eboard:gap-1.5">
                 {badges.map((badge) => (
                   <TeacherBadgePill key={badge} type={badge} />
                 ))}
@@ -96,7 +96,7 @@ export default function TeacherDetail({ locale, profile, rankPosition, selectedY
             ) : null}
           </div>
 
-          <div className="grid min-w-full gap-4 sm:grid-cols-2 lg:min-w-[340px] lg:max-w-[360px]">
+          <div className="grid min-w-full gap-4 eboard:gap-3 sm:grid-cols-2 lg:min-w-[340px] lg:max-w-[360px]">
             <StatCard label={m.teacherDetail.publicRank} value={rankPosition ? `#${rankPosition}` : m.teacherDetail.rankUnavailable} tone="indigo" />
             <StatCard label={m.teacherDetail.activityScore} value={profile.activity_score.toFixed(2)} tone="emerald" />
             <StatCard label={m.teacherDetail.qualifications} value={profile.qualification_count} tone="amber" />
@@ -105,28 +105,28 @@ export default function TeacherDetail({ locale, profile, rankPosition, selectedY
         </div>
       </motion.section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 eboard:gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label={m.teacherDetail.activeDays} value={profile.active_days_count} icon={<CalendarDays className="h-4 w-4" />} />
         <MetricCard label={m.teacherDetail.categoryCoverage} value={m.teacherDetail.categoryCoverageValue.replace('{count}', String(profile.category_coverage_count))} icon={<Radar className="h-4 w-4" />} />
         <MetricCard label={m.teacherDetail.recentActivity} value={profile.recent_activity_count} icon={<Sparkles className="h-4 w-4" />} />
         <MetricCard label={m.teacherDetail.topCategory} value={profile.most_used_category ?? m.teacherDetail.none} icon={<ShieldCheck className="h-4 w-4" />} />
       </section>
 
-      <section className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-6 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
+      <section className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-6 eboard:p-4 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
         <h2 className="text-2xl font-bold text-white">{m.teacherDetail.profileSummary}</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300 md:text-base">
+        <p className="mt-3 eboard:mt-2 max-w-3xl text-sm leading-7 eboard:leading-6 text-slate-300 md:text-base eboard:md:text-sm">
           {m.teacherDetail.profileSummaryHint}
         </p>
       </section>
 
       {!hasActivity ? (
-        <section className="rounded-[1.75rem] border border-dashed border-white/10 bg-slate-900/65 px-8 py-14 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)]">
+        <section className="rounded-[1.75rem] border border-dashed border-white/10 bg-slate-900/65 px-8 eboard:px-6 py-14 eboard:py-9 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)]">
           <h2 className="text-2xl font-bold text-white">{m.teacherDetail.noActivityTitle}</h2>
           <p className="mt-3 text-sm leading-7 text-slate-300 md:text-base">{m.teacherDetail.noActivityHint}</p>
         </section>
       ) : (
         <>
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="grid gap-8 eboard:gap-5 lg:grid-cols-2">
             <ChartCard
               locale={locale}
               title={m.teacherDetail.categoryBreakdown}
@@ -181,7 +181,7 @@ export default function TeacherDetail({ locale, profile, rankPosition, selectedY
             </ChartCard>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="grid gap-8 eboard:gap-5 lg:grid-cols-2">
             <ChartCard
               locale={locale}
               title={m.teacherDetail.monthlyTrend}
@@ -237,7 +237,7 @@ export default function TeacherDetail({ locale, profile, rankPosition, selectedY
             </ChartCard>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="grid gap-8 eboard:gap-5 lg:grid-cols-[1.1fr_0.9fr]">
             <ChartCard
               locale={locale}
               title={m.teacherDetail.valueBalance}
@@ -268,28 +268,28 @@ export default function TeacherDetail({ locale, profile, rankPosition, selectedY
               )}
             </ChartCard>
 
-            <section className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-6 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
+            <section className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-6 eboard:p-4 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
               <h2 className="flex items-center gap-2 text-2xl font-bold text-white">
                 <Users className="h-5 w-5 text-indigo-300" />
                 {m.teacherDetail.topClasses}
               </h2>
-              <div className="mt-5 space-y-3">
+              <div className="mt-5 eboard:mt-4 space-y-3 eboard:space-y-2">
                 {profile.top_supported_classes.length > 0 ? (
                   profile.top_supported_classes.map((entry) => (
                     <div
                       key={`${entry.class_label}-${entry.qualification_count}`}
-                      className="rounded-2xl border border-white/10 bg-slate-950/45 px-4 py-4"
+                      className="rounded-2xl border border-white/10 bg-slate-950/45 px-4 eboard:px-3 py-4 eboard:py-3"
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                         <div className="min-w-0">
-                          <div className="text-lg font-bold text-white">
+                          <div className="text-lg eboard:text-base font-bold text-white">
                             {formatGradeSection(entry.grade, entry.section)}
                           </div>
-                          <p className="mt-1 text-sm text-slate-300">
+                          <p className="mt-1 text-sm eboard:text-[13px] text-slate-300">
                             {entry.students_reached} {m.teacherDetail.studentsSupported}
                           </p>
                         </div>
-                        <div className="self-start rounded-full bg-indigo-500/15 px-3 py-1 text-sm font-semibold text-indigo-200">
+                        <div className="self-start rounded-full bg-indigo-500/15 px-3 eboard:px-2.5 py-1 text-sm eboard:text-[13px] font-semibold text-indigo-200">
                           {entry.qualification_count} {m.teacherDetail.events}
                         </div>
                       </div>
@@ -324,9 +324,9 @@ function StatCard({
   } as const;
 
   return (
-    <div className={`rounded-[1.5rem] border bg-gradient-to-br px-5 py-5 shadow-[0_16px_60px_rgba(15,23,42,0.22)] ${tones[tone]}`}>
+    <div className={`rounded-[1.5rem] border bg-gradient-to-br px-5 eboard:px-4 py-5 eboard:py-4 shadow-[0_16px_60px_rgba(15,23,42,0.22)] ${tones[tone]}`}>
       <div className="text-[11px] uppercase tracking-[0.24em] text-slate-300">{label}</div>
-      <div className="mt-3 text-3xl font-black text-white">{value}</div>
+      <div className="mt-3 eboard:mt-2 text-3xl eboard:text-2xl font-black text-white">{value}</div>
     </div>
   );
 }
@@ -341,12 +341,12 @@ function MetricCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 px-5 py-5 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
+    <div className="rounded-[1.5rem] border border-white/10 bg-slate-900/70 px-5 eboard:px-4 py-5 eboard:py-4 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
       <div className="flex items-center justify-between gap-3">
         <div className="text-[11px] uppercase tracking-[0.24em] text-slate-400">{label}</div>
         <div className="text-slate-400">{icon}</div>
       </div>
-      <div className="mt-3 text-2xl font-black text-white">{value}</div>
+      <div className="mt-3 eboard:mt-2 text-2xl eboard:text-xl font-black text-white">{value}</div>
     </div>
   );
 }
@@ -371,17 +371,17 @@ function ChartCard({
 
   return (
     <section
-      className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-5 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur sm:p-6"
+      className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-5 eboard:p-4 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur sm:p-6 eboard:sm:p-5"
       aria-labelledby={titleId}
       aria-describedby={`${hintId} ${summaryId}`}
     >
-      <h2 id={titleId} className="flex items-center gap-2 text-2xl font-bold text-white">
+      <h2 id={titleId} className="flex items-center gap-2 text-2xl eboard:text-xl font-bold text-white">
         {icon}
         {title}
       </h2>
-      <p id={hintId} className="mt-2 text-sm leading-6 text-slate-300">{hint}</p>
+      <p id={hintId} className="mt-2 text-sm eboard:text-[13px] leading-6 eboard:leading-5 text-slate-300">{hint}</p>
       <p id={summaryId} className="sr-only">{m.teacherDetail.chartSummaryLabel}: {title}. {hint}</p>
-      <div className="mt-6 h-[18rem] sm:h-80" role="img" aria-labelledby={titleId} aria-describedby={`${hintId} ${summaryId}`}>
+      <div className="mt-6 eboard:mt-4 h-[18rem] eboard:h-[14rem] sm:h-80 eboard:sm:h-64" role="img" aria-labelledby={titleId} aria-describedby={`${hintId} ${summaryId}`}>
         {children}
       </div>
     </section>

@@ -139,7 +139,7 @@ export default function ClassDetail({ locale, grade, section, students, allStude
   const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
 
   return (
-    <div className="max-w-5xl mx-auto p-4 space-y-8">
+    <div className="max-w-5xl mx-auto p-4 space-y-8 eboard:space-y-5">
       {/* Back button */}
       <a href={buildYearHref('/', selectedYear)} className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition-colors font-medium">
         <ArrowLeft className="w-4 h-4" />
@@ -152,29 +152,29 @@ export default function ClassDetail({ locale, grade, section, students, allStude
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col gap-4"
       >
-        <div className="flex flex-col md:flex-row items-center gap-6 p-8 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-black shadow-lg flex-shrink-0">
+        <div className="flex flex-col md:flex-row items-center gap-6 eboard:gap-4 p-8 eboard:p-5 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl">
+          <div className="w-20 h-20 eboard:w-16 eboard:h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl eboard:text-2xl font-black shadow-lg flex-shrink-0">
             {grade}
           </div>
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white">
+            <h1 className="text-3xl eboard:text-2xl md:text-4xl eboard:md:text-3xl font-extrabold text-gray-900 dark:text-white">
               {m.classDetail.gradeLabel.replace('{grade}', formatGradeSection(grade, selectedSection))}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">{m.classDetail.students.replace('{count}', String(displayStudents.length))}</p>
           </div>
           <div className="flex flex-col gap-2">
-            <div className="flex gap-4">
-              <div className="flex flex-col items-center px-6 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900">
+            <div className="flex gap-4 eboard:gap-2">
+              <div className="flex flex-col items-center px-6 eboard:px-4 py-3 eboard:py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900">
                 <span className="text-xs font-medium text-indigo-500">{m.classDetail.classAverage}</span>
                 <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">{classAvg}</span>
               </div>
-              <div className="flex flex-col items-center px-6 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+              <div className="flex flex-col items-center px-6 eboard:px-4 py-3 eboard:py-2 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
                 <span className="text-xs font-medium text-gray-500">{m.classDetail.schoolAverage}</span>
                 <span className="text-2xl font-black text-gray-600 dark:text-gray-300">{schoolAvg}</span>
               </div>
             </div>
             {mostActiveTeacher && !isArchiveView && (
-              <div className="flex flex-col items-center px-6 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50">
+              <div className="flex flex-col items-center px-6 eboard:px-4 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50">
                 <span className="text-xs font-medium text-amber-700 dark:text-amber-300">{m.classDetail.mostActive}</span>
                 <span className="text-sm font-bold text-amber-900 dark:text-amber-100 truncate">{mostActiveTeacher.full_name}</span>
                 <span className="text-xs text-amber-600 dark:text-amber-400">{m.classDetail.qualificationsCount.replace('{count}', String(mostActiveTeacherCount))}</span>
@@ -185,10 +185,10 @@ export default function ClassDetail({ locale, grade, section, students, allStude
 
         {/* Section Tabs */}
         {sections.length > 0 && (
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-white/40 dark:bg-gray-900/40 border border-gray-100 dark:border-gray-800 overflow-x-auto">
+          <div className="flex items-center gap-2 eboard:gap-1.5 p-3 eboard:p-2 rounded-xl bg-white/40 dark:bg-gray-900/40 border border-gray-100 dark:border-gray-800 overflow-x-auto">
             <button
               onClick={() => setSelectedSection(null)}
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+              className={`px-4 eboard:px-3 py-2 eboard:py-1.5 rounded-lg font-medium whitespace-nowrap transition-all ${
                 selectedSection === null
                   ? 'bg-indigo-500 text-white shadow-md'
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -200,7 +200,7 @@ export default function ClassDetail({ locale, grade, section, students, allStude
               <button
                 key={sec}
                 onClick={() => setSelectedSection(sec)}
-                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+                className={`px-4 eboard:px-3 py-2 eboard:py-1.5 rounded-lg font-medium whitespace-nowrap transition-all ${
                   selectedSection === sec
                     ? 'bg-indigo-500 text-white shadow-md'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -213,19 +213,19 @@ export default function ClassDetail({ locale, grade, section, students, allStude
         )}
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 eboard:gap-5">
         {/* Comparison Chart */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+          <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-4 eboard:mb-3 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-green-500" />
             {m.classDetail.classVsSchoolAverage}
           </h2>
-          <div className="w-full h-64">
+          <div className="w-full h-64 eboard:h-52">
             <ResponsiveContainer>
               <BarChart data={comparisonData} layout="vertical" barCategoryGap="30%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
@@ -254,13 +254,13 @@ export default function ClassDetail({ locale, grade, section, students, allStude
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+          <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-4 eboard:mb-3 flex items-center gap-2">
             <Users className="w-5 h-5 text-indigo-500" />
             {m.classDetail.categoryBreakdown}
           </h2>
-          <div className="w-full h-64">
+          <div className="w-full h-64 eboard:h-52">
             <ResponsiveContainer>
               <BarChart data={categoryData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -281,18 +281,18 @@ export default function ClassDetail({ locale, grade, section, students, allStude
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 eboard:gap-5">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.25 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+          <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-4 eboard:mb-3 flex items-center gap-2">
             <Layers3 className="w-5 h-5 text-sky-500" />
             {m.classDetail.scoreDistribution}
           </h2>
-          <div className="w-full h-64">
+          <div className="w-full h-64 eboard:h-52">
             <ResponsiveContainer>
               <BarChart data={scoreDistributionData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -320,13 +320,13 @@ export default function ClassDetail({ locale, grade, section, students, allStude
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+          <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-4 eboard:mb-3 flex items-center gap-2">
             <PieChartIcon className="w-5 h-5 text-emerald-500" />
             {m.classDetail.classHealthSplit}
           </h2>
-          <div className="w-full h-64">
+          <div className="w-full h-64 eboard:h-52">
             {classHealthData.length === 0 ? (
               <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm">
                 {m.classDetail.noScores}
@@ -369,13 +369,13 @@ export default function ClassDetail({ locale, grade, section, students, allStude
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+          className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+          <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-4 eboard:mb-3 flex items-center gap-2">
             <Zap className="w-5 h-5 text-violet-500" />
             {m.classDetail.sectionComparison}
           </h2>
-          <div className="w-full h-72">
+          <div className="w-full h-72 eboard:h-56">
             <ResponsiveContainer>
               <BarChart data={sectionComparisonData} barCategoryGap="22%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -404,9 +404,9 @@ export default function ClassDetail({ locale, grade, section, students, allStude
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="p-6 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
+        className="p-6 eboard:p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-lg border border-gray-100 dark:border-gray-800 shadow-xl"
       >
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+        <h2 className="text-xl eboard:text-lg font-bold text-gray-800 dark:text-white mb-4 eboard:mb-3 flex items-center gap-2">
           <Award className="w-5 h-5 text-yellow-500" />
           {m.classDetail.topFive.replace('{grade}', formatGradeSection(grade, selectedSection))}
         </h2>
@@ -421,7 +421,7 @@ export default function ClassDetail({ locale, grade, section, students, allStude
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.05 * i }}
-                className="flex items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow cursor-pointer no-underline"
+                className="flex items-center gap-4 eboard:gap-3 p-4 eboard:p-3 rounded-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow cursor-pointer no-underline"
               >
                 <span className="text-2xl flex-shrink-0">{medals[i]}</span>
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold flex-shrink-0">

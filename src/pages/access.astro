@@ -9,29 +9,29 @@ const m = getMessages(locale);
 ---
 
 <Layout title={m.public.portalAccess} description={m.public.choosePortal} schoolName={schoolName} noindex locale={locale}>
-  <main class="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12">
+  <main class="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12 eboard:py-6">
     <div class="max-w-4xl mx-auto px-4">
-      <div class="text-center mb-10">
+      <div class="text-center mb-10 eboard:mb-6">
         <a href={buildLocaleHref('/', locale)} class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-300 hover:text-indigo-700 dark:hover:text-indigo-200 transition-colors">
           ← {m.public.backToLeaderboard}
         </a>
-        <h1 class="mt-4 text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+        <h1 class="mt-4 eboard:mt-3 text-4xl eboard:text-3xl md:text-5xl eboard:md:text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">
           {m.public.portalAccess}
         </h1>
-        <p class="mt-3 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        <p class="mt-3 eboard:mt-2 text-lg eboard:text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
           {m.public.choosePortal}
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 eboard:gap-4">
         <a
           href={buildLocaleHref('/teacher', locale)}
-          class="group rounded-3xl border border-indigo-200/70 dark:border-indigo-800/70 bg-white/75 dark:bg-indigo-950/25 backdrop-blur-md p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all"
+          class="group rounded-3xl border border-indigo-200/70 dark:border-indigo-800/70 bg-white/75 dark:bg-indigo-950/25 backdrop-blur-md p-6 eboard:p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all"
         >
           <div class="flex items-start justify-between gap-4">
             <div>
               <p class="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-500 dark:text-indigo-300">{m.public.portalAccess}</p>
-              <h2 class="mt-3 text-2xl font-bold text-gray-900 dark:text-white">{m.public.teacherPortal}</h2>
+              <h2 class="mt-3 text-2xl eboard:text-xl font-bold text-gray-900 dark:text-white">{m.public.teacherPortal}</h2>
               <p class="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">
                 {m.public.teacherPortalDesc}
               </p>
@@ -42,12 +42,12 @@ const m = getMessages(locale);
 
         <a
           href={buildLocaleHref('/admin', locale)}
-          class="group rounded-3xl border border-fuchsia-200/70 dark:border-fuchsia-800/70 bg-white/75 dark:bg-fuchsia-950/20 backdrop-blur-md p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all"
+          class="group rounded-3xl border border-fuchsia-200/70 dark:border-fuchsia-800/70 bg-white/75 dark:bg-fuchsia-950/20 backdrop-blur-md p-6 eboard:p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all"
         >
           <div class="flex items-start justify-between gap-4">
             <div>
               <p class="text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-500 dark:text-fuchsia-300">{m.public.management}</p>
-              <h2 class="mt-3 text-2xl font-bold text-gray-900 dark:text-white">{m.public.adminPanel}</h2>
+              <h2 class="mt-3 text-2xl eboard:text-xl font-bold text-gray-900 dark:text-white">{m.public.adminPanel}</h2>
               <p class="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">
                 {m.public.adminPanelDesc}
               </p>

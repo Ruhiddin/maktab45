@@ -107,7 +107,7 @@ export default function StudentRow({
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       className={cn(
-        'flex flex-wrap sm:grid sm:grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 py-3 items-center rounded-xl shadow-sm border hover:shadow-md transition-shadow cursor-pointer',
+        'flex flex-wrap sm:grid sm:grid-cols-12 gap-2 sm:gap-4 eboard:sm:gap-3 px-3 sm:px-4 eboard:sm:px-3 py-3 eboard:py-2 items-center rounded-xl shadow-sm border hover:shadow-md transition-shadow cursor-pointer',
         flash === 'up'
           ? 'bg-green-50/70 dark:bg-green-950/20 border-green-200/60 dark:border-green-900/40'
           : flash === 'down'
@@ -134,13 +134,13 @@ export default function StudentRow({
       <div className="hidden sm:block col-span-1 text-center font-bold text-gray-500" aria-label={`Rank ${actualRank}`}>#{actualRank}</div>
 
       <div className="flex items-center gap-3 w-full sm:w-auto sm:col-span-6 min-w-0">
-        <span className="sm:hidden text-sm font-bold text-gray-400 w-6 flex-shrink-0">#{actualRank}</span>
+        <span className="sm:hidden text-sm eboard:text-[13px] font-bold text-gray-400 w-6 flex-shrink-0">#{actualRank}</span>
 
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex-shrink-0">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 eboard:sm:w-9 eboard:sm:h-9 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex-shrink-0">
           {student.avatar_url ? (
             <img src={student.avatar_url} alt={student.name} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 uppercase font-bold text-sm">
+            <div className="w-full h-full flex items-center justify-center text-gray-400 uppercase font-bold text-sm eboard:text-xs">
               {student.name.charAt(0)}
             </div>
           )}
@@ -148,7 +148,7 @@ export default function StudentRow({
 
         <div className="min-w-0">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="font-semibold text-gray-800 dark:text-gray-100 truncate hover:text-indigo-600 transition-colors text-sm sm:text-base">
+            <span className="font-semibold text-gray-800 dark:text-gray-100 truncate hover:text-indigo-600 transition-colors text-sm sm:text-base eboard:sm:text-[15px]">
               {nameNode}
             </span>
             {badges.length > 0 && (
@@ -173,15 +173,15 @@ export default function StudentRow({
         <a
           href={buildClassHref(formatGradeSection(student.grade, student.section), selectedYear)}
           onClick={(e) => e.stopPropagation()}
-          className="sm:col-span-2 text-center text-xs sm:text-base text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="sm:col-span-2 text-center text-xs sm:text-base eboard:sm:text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
         >
-          <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border', gradePillClass(student.grade))}>
+          <span className={cn('inline-flex items-center px-2 py-0.5 eboard:px-1.5 rounded-full text-xs eboard:text-[11px] font-semibold border', gradePillClass(student.grade))}>
             {formatGradeSection(student.grade, student.section)}
           </span>
         </a>
 
         <div className="sm:col-span-2 text-center">
-          <div className={cn('font-black text-sm sm:text-base tabular-nums', scoreTone(score))}>
+          <div className={cn('font-black text-sm sm:text-base eboard:sm:text-sm tabular-nums', scoreTone(score))}>
             {formatSigned(score)}
           </div>
           <div className="mt-1 hidden sm:block">
@@ -190,7 +190,7 @@ export default function StudentRow({
               behavior={student.behavior_score}
               extracurricular={student.extracurricular_score}
               attendance={student.attendance_score}
-              className="max-w-[140px] mx-auto"
+              className="max-w-[140px] eboard:max-w-[120px] mx-auto"
             />
           </div>
         </div>

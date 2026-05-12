@@ -12,24 +12,24 @@ const m = getMessages(locale);
 ---
 
 <Layout title={m.public.archives} description={m.public.archivesDesc} schoolName={schoolName} locale={locale}>
-  <main class="min-h-screen bg-gradient-to-br from-stone-100 to-amber-50 dark:from-gray-900 dark:to-stone-950 py-12">
+  <main class="min-h-screen bg-gradient-to-br from-stone-100 to-amber-50 dark:from-gray-900 dark:to-stone-950 py-12 eboard:py-6">
     <div class="max-w-4xl mx-auto px-4">
 
       <!-- Header -->
-      <div class="text-center mb-12">
+      <div class="text-center mb-12 eboard:mb-7">
         <a href={buildLocaleHref('/', locale)} class="inline-block mb-4 text-sm text-indigo-600 dark:text-indigo-400 hover:underline">&larr; {m.public.backToLive}</a>
-        <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-stone-600 to-amber-700 dark:from-stone-400 dark:to-amber-500 mb-4 tracking-tight">
+        <h1 class="text-4xl eboard:text-3xl md:text-5xl eboard:md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-stone-600 to-amber-700 dark:from-stone-400 dark:to-amber-500 mb-4 eboard:mb-3 tracking-tight">
           {schoolName} {m.public.archives}
         </h1>
-        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+        <p class="text-lg eboard:text-base text-gray-600 dark:text-gray-400 max-w-xl eboard:max-w-2xl mx-auto">
           {m.public.archivesDesc}
         </p>
       </div>
 
       {archives.length === 0 ? (
         <!-- Empty state -->
-        <div class="text-center py-20">
-          <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-stone-200 dark:bg-stone-800 mb-6">
+        <div class="text-center py-20 eboard:py-12">
+          <div class="inline-flex items-center justify-center w-20 h-20 eboard:w-16 eboard:h-16 rounded-full bg-stone-200 dark:bg-stone-800 mb-6 eboard:mb-4">
             <svg class="w-10 h-10 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
             </svg>
@@ -39,20 +39,20 @@ const m = getMessages(locale);
         </div>
       ) : (
         <!-- Archive Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 eboard:lg:grid-cols-4 gap-6 eboard:gap-4">
           {archives.map(archive => (
             <a
               href={buildLocaleHref('/', locale, `year=${archive.year}`)}
-              class="group block p-6 rounded-2xl bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-stone-200 dark:border-stone-700 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
+              class="group block p-6 eboard:p-4 rounded-2xl bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-stone-200 dark:border-stone-700 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
             >
-              <div class="flex items-center gap-3 mb-4">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-stone-500 flex items-center justify-center shadow-md">
+              <div class="flex items-center gap-3 eboard:gap-2.5 mb-4 eboard:mb-3">
+                <div class="w-12 h-12 eboard:w-10 eboard:h-10 rounded-xl bg-gradient-to-br from-amber-400 to-stone-500 flex items-center justify-center shadow-md">
                   <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-2xl font-bold text-gray-800 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                  <h3 class="text-2xl eboard:text-xl font-bold text-gray-800 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                     {archive.year}
                   </h3>
                   <p class="text-xs text-gray-500 dark:text-gray-400">{m.public.schoolYear}</p>

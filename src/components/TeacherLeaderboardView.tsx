@@ -104,9 +104,9 @@ export default function TeacherLeaderboardView({
   const hasTeachers = teachers.length > 0;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12 eboard:py-6">
       <div className="max-w-5xl mx-auto px-4">
-        <div className="mb-6 flex justify-center">
+        <div className="mb-6 eboard:mb-4 flex justify-center">
           <ClientStudyYearPicker
             pathname={pathname}
             locale={activeLocale}
@@ -116,30 +116,30 @@ export default function TeacherLeaderboardView({
           />
         </div>
 
-        <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-900/95 via-indigo-950/90 to-slate-900/95 px-6 py-10 text-center shadow-[0_24px_80px_rgba(15,23,42,0.45)] backdrop-blur">
+        <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-900/95 via-indigo-950/90 to-slate-900/95 px-6 eboard:px-5 py-10 eboard:py-6 text-center shadow-[0_24px_80px_rgba(15,23,42,0.45)] backdrop-blur">
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-300">
             {m.teacherLeaderboard.eyebrow}
           </p>
-          <h1 className="mt-4 text-4xl font-black tracking-tight text-white md:text-5xl">
+          <h1 className="mt-4 eboard:mt-3 text-4xl eboard:text-3xl font-black tracking-tight text-white md:text-5xl eboard:md:text-4xl">
             {m.teacherLeaderboard.title}
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-300 md:text-base">
+          <p className="mx-auto mt-4 eboard:mt-3 max-w-2xl eboard:max-w-3xl text-sm text-slate-300 md:text-base eboard:md:text-sm">
             {selectedYear
               ? `${m.teacherLeaderboard.archiveIntro} ${selectedYear}.`
               : `${currentAcademicYear} ${m.teacherLeaderboard.liveIntro}`}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-8 eboard:mt-5 flex flex-wrap items-center justify-center gap-3 eboard:gap-2">
             <a
               href={buildLocaleHref('/', activeLocale, selectedYear ? `year=${selectedYear}` : null)}
-              className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-100 transition hover:border-indigo-400/40 hover:bg-indigo-500/10 sm:w-auto"
+              className="w-full rounded-full border border-white/10 bg-white/5 px-5 eboard:px-4 py-2.5 eboard:py-2 text-sm font-semibold text-slate-100 transition hover:border-indigo-400/40 hover:bg-indigo-500/10 sm:w-auto"
             >
               {m.teacherLeaderboard.backToStudent}
             </a>
             {selectedYear ? (
               <a
                 href={buildLocaleHref(pathname, activeLocale)}
-                className="w-full rounded-full border border-amber-400/30 bg-amber-500/10 px-5 py-2.5 text-sm font-semibold text-amber-200 transition hover:bg-amber-500/15 sm:w-auto"
+                className="w-full rounded-full border border-amber-400/30 bg-amber-500/10 px-5 eboard:px-4 py-2.5 eboard:py-2 text-sm font-semibold text-amber-200 transition hover:bg-amber-500/15 sm:w-auto"
               >
                 {m.teacherLeaderboard.returnToLive}
               </a>
@@ -148,13 +148,13 @@ export default function TeacherLeaderboardView({
         </div>
 
         {selectedYear ? (
-          <section className="mt-6 rounded-[1.5rem] border border-amber-400/20 bg-amber-500/10 px-5 py-4 text-sm text-amber-100 shadow-[0_16px_40px_rgba(120,53,15,0.15)]">
+          <section className="mt-6 eboard:mt-4 rounded-[1.5rem] border border-amber-400/20 bg-amber-500/10 px-5 eboard:px-4 py-4 eboard:py-3 text-sm text-amber-100 shadow-[0_16px_40px_rgba(120,53,15,0.15)]">
             {m.teacherLeaderboard.archiveBanner.replace('{year}', selectedYear)}
           </section>
         ) : null}
 
         {loading ? (
-          <section className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-10 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
+          <section className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-10 eboard:p-7 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
             <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-indigo-400/20 border-t-indigo-400" />
             <h2 className="mt-5 text-xl font-bold text-white">{m.teacherLeaderboard.loadingTitle}</h2>
             <p className="mt-2 text-sm text-slate-300">
@@ -162,7 +162,7 @@ export default function TeacherLeaderboardView({
             </p>
           </section>
         ) : error ? (
-          <section className="mt-8 rounded-[1.75rem] border border-rose-500/30 bg-rose-500/10 p-8 text-center shadow-[0_16px_60px_rgba(127,29,29,0.18)] backdrop-blur">
+          <section className="mt-8 rounded-[1.75rem] border border-rose-500/30 bg-rose-500/10 p-8 eboard:p-6 text-center shadow-[0_16px_60px_rgba(127,29,29,0.18)] backdrop-blur">
             <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/20 text-2xl text-rose-100">
               !
             </div>
@@ -179,21 +179,21 @@ export default function TeacherLeaderboardView({
             </button>
           </section>
         ) : archiveState === 'missing' ? (
-          <section className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-8 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
+          <section className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-8 eboard:p-6 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
             <h2 className="text-2xl font-bold text-white">{m.teacherLeaderboard.archiveMissingTitle}</h2>
             <p className="mt-3 text-sm leading-7 text-slate-300">
               {m.teacherLeaderboard.archiveMissingHint}
             </p>
           </section>
         ) : archiveState === 'legacy' ? (
-          <section className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-8 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
+          <section className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-8 eboard:p-6 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
             <h2 className="text-2xl font-bold text-white">{m.teacherLeaderboard.archiveLegacyTitle}</h2>
             <p className="mt-3 text-sm leading-7 text-slate-300">
               {m.teacherLeaderboard.archiveLegacyHint}
             </p>
           </section>
         ) : !hasTeachers ? (
-          <section className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-8 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
+          <section className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-8 eboard:p-6 text-center shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur">
             <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/15 text-2xl shadow-[0_10px_30px_rgba(99,102,241,0.25)]">
               👩‍🏫
             </div>

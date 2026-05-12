@@ -223,26 +223,26 @@ export default function HomepageView({
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12">
-      <div className="max-w-5xl mx-auto px-4 text-center mb-8">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12 eboard:py-6">
+      <div className="max-w-5xl mx-auto px-4 text-center mb-8 eboard:mb-5">
         <a href={buildLocaleHref('/access', activeLocale)} className="inline-block group">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 mb-4 tracking-tight transition-transform group-hover:scale-[1.01]">
+          <h1 className="text-4xl md:text-6xl eboard:text-[2.9rem] font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 mb-4 eboard:mb-2 tracking-tight transition-transform group-hover:scale-[1.01]">
             {schoolName}
           </h1>
         </a>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        <p className="text-lg eboard:text-base text-gray-600 dark:text-gray-300 max-w-2xl eboard:max-w-3xl mx-auto">
           {selectedYear ? `${m.public.archiveLabel} ${selectedYear}` : academicYear} {m.public.homepageSubtitle}
         </p>
-        <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-white/10 bg-slate-950/35 p-1.5 shadow-[0_12px_30px_rgba(15,23,42,0.2)] backdrop-blur">
-          <span className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
+        <div className="mt-6 eboard:mt-4 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-white/10 bg-slate-950/35 p-1.5 eboard:p-1 shadow-[0_12px_30px_rgba(15,23,42,0.2)] backdrop-blur">
+          <span className="px-3 py-2 eboard:px-2.5 eboard:py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-slate-300">
             {m.public.leaderboardSwitch}
           </span>
-          <span className="rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+          <span className="rounded-full bg-indigo-500 px-4 py-2 eboard:px-3 eboard:py-1.5 text-sm font-semibold text-white shadow-sm">
             {m.public.studentLeaderboard}
           </span>
           <a
             href={buildLocaleHref(buildTeacherLeaderboardHref(selectedYear), activeLocale)}
-            className="rounded-full px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white"
+            className="rounded-full px-4 py-2 eboard:px-3 eboard:py-1.5 text-sm font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white"
             title={m.public.teacherLeaderboardHint}
           >
             {m.public.teacherLeaderboard}
@@ -256,8 +256,8 @@ export default function HomepageView({
       </div>
 
       {loading ? (
-        <div className="max-w-5xl mx-auto p-4">
-          <div className="rounded-3xl border border-gray-200/70 bg-white/60 px-6 py-16 text-center shadow-lg backdrop-blur-md dark:border-gray-800 dark:bg-black/40">
+        <div className="max-w-5xl mx-auto p-4 eboard:pt-2">
+          <div className="rounded-3xl border border-gray-200/70 bg-white/60 px-6 py-16 eboard:px-5 eboard:py-10 text-center shadow-lg backdrop-blur-md dark:border-gray-800 dark:bg-black/40">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-indigo-500/30 border-t-indigo-500" />
             <p className="text-sm font-medium text-gray-700 dark:text-gray-200">{m.public.leaderboard}</p>
           </div>

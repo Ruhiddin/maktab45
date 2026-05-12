@@ -179,8 +179,8 @@ export default function StudentDetailView({
   const backHref = useMemo(() => buildYearHref('/', selectedYear), [selectedYear]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12">
-      <div className="max-w-5xl mx-auto px-4 mb-6 flex justify-center">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950 py-12 eboard:py-6">
+      <div className="max-w-5xl mx-auto px-4 mb-6 eboard:mb-4 flex justify-center">
         <ClientStudyYearPicker
           pathname={pathname}
           locale={activeLocale}
@@ -193,7 +193,7 @@ export default function StudentDetailView({
 
       {loading ? (
         <div className="max-w-5xl mx-auto px-4">
-          <div className="rounded-3xl border border-gray-200/70 bg-white/60 px-6 py-16 text-center shadow-lg backdrop-blur-md dark:border-gray-800 dark:bg-black/40">
+          <div className="rounded-3xl border border-gray-200/70 bg-white/60 px-6 eboard:px-5 py-16 eboard:py-10 text-center shadow-lg backdrop-blur-md dark:border-gray-800 dark:bg-black/40">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-indigo-500/30 border-t-indigo-500" />
           </div>
         </div>
@@ -209,7 +209,7 @@ export default function StudentDetailView({
         />
       ) : (
         <div className="max-w-4xl mx-auto px-4">
-          <div className="rounded-3xl border border-gray-200/70 bg-white/60 px-6 py-14 text-center shadow-lg backdrop-blur-md dark:border-gray-800 dark:bg-black/40">
+          <div className="rounded-3xl border border-gray-200/70 bg-white/60 px-6 eboard:px-5 py-14 eboard:py-9 text-center shadow-lg backdrop-blur-md dark:border-gray-800 dark:bg-black/40">
             <p className="text-lg font-semibold text-gray-900 dark:text-white">{m.public.noFilteredStudents}</p>
             <a href={backHref} className="mt-4 inline-flex text-sm font-medium text-indigo-600 hover:underline">
               {m.studentDetail.back}
