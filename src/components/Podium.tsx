@@ -40,7 +40,7 @@ export default function Podium({ top3, category, selectedYear = null }: Props) {
   if (!top3 || top3.length === 0) return null;
 
   return (
-    <div className="flex flex-col items-center md:flex-row md:items-end justify-center gap-4 eboard:gap-3 md:gap-8 eboard:pt-8 pt-24 md:pt-28 eboard:md:pt-10 eboard:pb-6 pb-12">
+    <div className="flex flex-col items-center md:flex-row md:items-end justify-center gap-4 eboard:gap-2 md:gap-8 eboard:pt-4 pt-24 md:pt-28 eboard:md:pt-5 eboard:pb-3 pb-12">
       {top3[1] && <PodiumCard student={top3[1]} rank={2} category={category} selectedYear={selectedYear} />}
       {top3[0] && <PodiumCard student={top3[0]} rank={1} category={category} selectedYear={selectedYear} />}
       {top3[2] && <PodiumCard student={top3[2]} rank={3} category={category} selectedYear={selectedYear} />}
@@ -56,9 +56,9 @@ function PodiumCard({ student, rank, category, selectedYear }: { student: Studen
   };
 
   const heights: Record<1 | 2 | 3, string> = {
-    1: 'h-56 sm:h-64 md:h-72 eboard:h-44 eboard:sm:h-48 eboard:md:h-52 scale-105 eboard:scale-100',
-    2: 'h-48 sm:h-56 md:h-64 eboard:h-40 eboard:sm:h-44 eboard:md:h-48',
-    3: 'h-44 sm:h-52 md:h-60 eboard:h-36 eboard:sm:h-40 eboard:md:h-44',
+    1: 'h-56 sm:h-64 md:h-72 eboard:h-34 eboard:sm:h-38 eboard:md:h-42 scale-105 eboard:scale-95',
+    2: 'h-48 sm:h-56 md:h-64 eboard:h-30 eboard:sm:h-34 eboard:md:h-38',
+    3: 'h-44 sm:h-52 md:h-60 eboard:h-28 eboard:sm:h-32 eboard:md:h-36',
   };
 
   let score = student.total_score;
@@ -88,12 +88,12 @@ function PodiumCard({ student, rank, category, selectedYear }: { student: Studen
         }
       }}
       className={cn(
-        'relative flex flex-col items-center p-4 eboard:p-3 sm:p-6 eboard:sm:p-4 rounded-2xl w-full max-w-[170px] eboard:max-w-[150px] sm:max-w-[210px] eboard:sm:max-w-[170px] border shadow-xl bg-gradient-to-br transition-transform hover:-translate-y-2 eboard:hover:-translate-y-1 cursor-pointer',
+        'relative flex flex-col items-center p-4 eboard:p-2 sm:p-6 eboard:sm:p-2.5 rounded-2xl w-full max-w-[170px] eboard:max-w-[118px] sm:max-w-[210px] eboard:sm:max-w-[132px] border shadow-xl bg-gradient-to-br transition-transform hover:-translate-y-2 eboard:hover:-translate-y-0.5 cursor-pointer',
         gradients[rank],
         heights[rank]
       )}
     >
-      <div className="absolute -top-4 eboard:-top-3 bg-white dark:bg-gray-800 p-2 eboard:p-1.5 rounded-full shadow-lg">
+      <div className="absolute -top-4 eboard:-top-2.5 bg-white dark:bg-gray-800 p-2 eboard:p-1 rounded-full shadow-lg">
         {rank === 1 ? (
           <>
             <span className="text-2xl leading-none" aria-hidden="true">👑</span>
@@ -115,28 +115,28 @@ function PodiumCard({ student, rank, category, selectedYear }: { student: Studen
         </div>
       )}
 
-      <div className="w-20 h-20 eboard:w-14 eboard:h-14 mt-4 eboard:mt-3 rounded-full bg-white/20 border-4 eboard:border-[3px] border-white/50 overflow-hidden mb-3 eboard:mb-2">
+      <div className="w-20 h-20 eboard:w-10 eboard:h-10 mt-4 eboard:mt-2 rounded-full bg-white/20 border-4 eboard:border-2 border-white/50 overflow-hidden mb-3 eboard:mb-1.5">
         {student.avatar_url ? (
           <img src={student.avatar_url} alt={student.name} className="w-full h-full object-cover" />
         ) : (
-            <div className="w-full h-full flex items-center justify-center text-white uppercase text-2xl eboard:text-lg font-bold">
+            <div className="w-full h-full flex items-center justify-center text-white uppercase text-2xl eboard:text-sm font-bold">
             {student.name.charAt(0)}
           </div>
         )}
       </div>
 
-      <h3 className="font-bold text-white text-center text-lg eboard:text-base leading-tight mb-1 line-clamp-2">{student.name}</h3>
+      <h3 className="font-bold text-white text-center text-lg eboard:text-[0.78rem] leading-tight mb-1 eboard:mb-0.5 line-clamp-2">{student.name}</h3>
       <a
         href={buildClassHref(formatGradeSection(student.grade, student.section), selectedYear)}
         onClick={(e) => e.stopPropagation()}
-        className="text-white/80 hover:text-white text-sm eboard:text-xs mb-3 eboard:mb-2 transition-colors"
+        className="text-white/80 hover:text-white text-sm eboard:text-[0.6rem] mb-3 eboard:mb-1 transition-colors"
       >
-          <span className="inline-flex items-center px-2 py-0.5 eboard:px-1.5 rounded-full text-xs eboard:text-[11px] font-semibold border border-white/25 bg-white/15 text-white">
+          <span className="inline-flex items-center px-2 py-0.5 eboard:px-1 eboard:py-0 rounded-full text-xs eboard:text-[0.56rem] font-semibold border border-white/25 bg-white/15 text-white">
           {formatGradeSection(student.grade, student.section)}
         </span>
       </a>
 
-      <div className="w-full mb-3">
+      <div className="w-full mb-3 eboard:mb-1.5">
         <CategoryMiniBar
           academic={student.academic_score}
           behavior={student.behavior_score}
@@ -145,7 +145,7 @@ function PodiumCard({ student, rank, category, selectedYear }: { student: Studen
         />
       </div>
 
-      <div className="text-2xl eboard:text-xl font-black text-white mt-auto drop-shadow-md">
+      <div className="text-2xl eboard:text-base font-black text-white mt-auto drop-shadow-md">
         {score > 0 ? `+${score}` : score}
       </div>
     </motion.div>

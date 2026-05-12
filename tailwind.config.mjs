@@ -4,7 +4,7 @@ export default {
 	theme: {
 		extend: {
 			screens: {
-				eboard: { raw: '(min-width: 1024px) and (max-height: 900px)' },
+				eboard: { raw: '(min-width: 1024px) and (max-height: 1080px)' },
 			},
 		},
 	},
