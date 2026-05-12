@@ -131,7 +131,7 @@ export default function StudentRow({
       }}
       onMouseLeave={() => onHoverLeave?.()}
     >
-      <div className="hidden sm:block col-span-1 text-center font-bold text-gray-500" aria-label={`Rank ${actualRank}`}>#{actualRank}</div>
+      <div className="hidden sm:block col-span-1 text-center font-bold eboard:text-[0.72rem] text-gray-500" aria-label={`Rank ${actualRank}`}>#{actualRank}</div>
 
       <div className="flex items-center gap-3 w-full sm:w-auto sm:col-span-6 min-w-0">
         <span className="sm:hidden text-sm eboard:text-[13px] font-bold text-gray-400 w-6 flex-shrink-0">#{actualRank}</span>
@@ -148,7 +148,7 @@ export default function StudentRow({
 
         <div className="min-w-0">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="font-semibold text-gray-800 dark:text-gray-100 truncate hover:text-indigo-600 transition-colors text-sm sm:text-base eboard:sm:text-[15px]">
+            <span className="font-semibold text-gray-800 dark:text-gray-100 truncate hover:text-indigo-600 transition-colors text-sm sm:text-base eboard:text-[0.72rem] eboard:sm:text-[0.76rem]">
               {nameNode}
             </span>
             {badges.length > 0 && (
@@ -173,15 +173,15 @@ export default function StudentRow({
         <a
           href={buildClassHref(formatGradeSection(student.grade, student.section), selectedYear)}
           onClick={(e) => e.stopPropagation()}
-          className="sm:col-span-2 text-center text-xs sm:text-base eboard:sm:text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+          className="sm:col-span-2 text-center text-xs sm:text-base eboard:text-[0.64rem] eboard:sm:text-[0.68rem] text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
         >
-          <span className={cn('inline-flex items-center px-2 py-0.5 eboard:px-1.5 rounded-full text-xs eboard:text-[11px] font-semibold border', gradePillClass(student.grade))}>
+          <span className={cn('inline-flex items-center px-2 py-0.5 eboard:px-1 eboard:py-0 rounded-full text-xs eboard:text-[0.56rem] font-semibold border', gradePillClass(student.grade))}>
             {formatGradeSection(student.grade, student.section)}
           </span>
         </a>
 
         <div className="sm:col-span-2 text-center">
-          <div className={cn('font-black text-sm sm:text-base eboard:sm:text-sm tabular-nums', scoreTone(score))}>
+          <div className={cn('font-black text-sm sm:text-base eboard:text-[0.72rem] eboard:sm:text-[0.76rem] tabular-nums', scoreTone(score))}>
             {formatSigned(score)}
           </div>
           <div className="mt-1 hidden sm:block">

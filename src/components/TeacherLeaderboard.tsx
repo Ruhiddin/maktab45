@@ -299,21 +299,21 @@ export default function TeacherLeaderboard({
                     className="grid grid-cols-1 gap-4 eboard:gap-3 rounded-[1.5rem] border border-white/10 bg-slate-950/45 px-4 eboard:px-3 py-4 eboard:py-3 shadow-[0_10px_30px_rgba(15,23,42,0.25)] transition hover:border-indigo-400/30 focus-visible:border-indigo-300/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/40 md:grid-cols-[72px,minmax(0,1.3fr),minmax(0,0.8fr),120px,110px,120px]"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex h-11 w-11 eboard:h-9 eboard:w-9 items-center justify-center rounded-2xl bg-indigo-500/20 text-sm eboard:text-[13px] font-black text-indigo-100">
+                      <span className="inline-flex h-11 w-11 eboard:h-8 eboard:w-8 items-center justify-center rounded-2xl bg-indigo-500/20 text-sm eboard:text-[0.62rem] font-black text-indigo-100">
                         #{index + 1}
                       </span>
                     </div>
 
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="break-words text-lg eboard:text-base font-bold text-white sm:truncate">{teacher.full_name}</h3>
+                        <h3 className="break-words text-lg eboard:text-[0.76rem] font-bold text-white sm:truncate">{teacher.full_name}</h3>
                         <div className="flex flex-wrap gap-1.5">
                           {(badgeMap[teacher.teacher_id] ?? []).slice(0, 3).map((badge) => (
                             <TeacherBadgePill key={badge} type={badge} compact />
                           ))}
                         </div>
                       </div>
-                      <div className="mt-2 eboard:mt-1.5 flex flex-wrap gap-2 eboard:gap-1.5 text-sm eboard:text-[13px] text-slate-300">
+                      <div className="mt-2 eboard:mt-1 flex flex-wrap gap-2 eboard:gap-1 text-sm eboard:text-[0.64rem] text-slate-300">
                         <span>{teacher.qualification_count} {m.teacherLeaderboard.qualifications}</span>
                         <span className="text-slate-500">•</span>
                         <span>{teacher.active_days_count} {m.teacherLeaderboard.activeDays}</span>
@@ -322,22 +322,22 @@ export default function TeacherLeaderboard({
                       </div>
                     </div>
 
-                    <div className="text-sm text-slate-300">
+                    <div className="text-sm eboard:text-[0.62rem] text-slate-300">
                       <div className="break-words md:line-clamp-2">{teacher.subjects.length ? teacher.subjects.join(', ') : m.teacherLeaderboard.generalSupport}</div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-3 text-xl font-black text-white md:justify-start">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 md:hidden">{m.teacherLeaderboard.score}</span>
+                    <div className="flex items-center justify-between gap-3 eboard:gap-2 text-xl eboard:text-[0.82rem] font-black text-white md:justify-start">
+                      <span className="text-[11px] eboard:text-[0.52rem] font-semibold uppercase tracking-[0.24em] text-slate-500 md:hidden">{m.teacherLeaderboard.score}</span>
                       {teacher.activity_score.toFixed(2)}
                     </div>
 
-                    <div className="flex items-center justify-between gap-3 text-sm font-semibold text-slate-200 md:justify-start">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 md:hidden">{m.teacherLeaderboard.reach}</span>
+                    <div className="flex items-center justify-between gap-3 eboard:gap-2 text-sm eboard:text-[0.64rem] font-semibold text-slate-200 md:justify-start">
+                      <span className="text-[11px] eboard:text-[0.52rem] font-semibold uppercase tracking-[0.24em] text-slate-500 md:hidden">{m.teacherLeaderboard.reach}</span>
                       {teacher.unique_students_count} {m.teacherLeaderboard.students}
                     </div>
 
-                    <div className="flex items-center justify-between gap-3 text-sm font-semibold text-slate-200 md:justify-start">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500 md:hidden">{m.teacherLeaderboard.recent}</span>
+                    <div className="flex items-center justify-between gap-3 eboard:gap-2 text-sm eboard:text-[0.64rem] font-semibold text-slate-200 md:justify-start">
+                      <span className="text-[11px] eboard:text-[0.52rem] font-semibold uppercase tracking-[0.24em] text-slate-500 md:hidden">{m.teacherLeaderboard.recent}</span>
                       {teacher.recent_activity_count} {m.teacherLeaderboard.recent.toLowerCase()}
                     </div>
                   </motion.a>
@@ -354,31 +354,31 @@ export default function TeacherLeaderboard({
                   aria-label={m.teacherLeaderboard.teacherLinkAriaLabel.replace('{name}', teacher.full_name)}
                   onMouseEnter={(event) => setHover({ teacher, rect: event.currentTarget.getBoundingClientRect() })}
                   onMouseLeave={() => setHover(null)}
-                  className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-5 eboard:p-4 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur transition hover:border-indigo-400/30 focus-visible:border-indigo-300/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/40"
+                  className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-5 eboard:p-3 shadow-[0_16px_60px_rgba(15,23,42,0.25)] backdrop-blur transition hover:border-indigo-400/30 focus-visible:border-indigo-300/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/40"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <div className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.24em] text-indigo-200">
+                      <div className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 eboard:px-2 py-1 eboard:py-0.5 text-xs eboard:text-[0.56rem] font-bold uppercase tracking-[0.24em] text-indigo-200">
                         #{index + 1}
                       </div>
-                      <h3 className="mt-4 break-words text-xl font-black text-white">{teacher.full_name}</h3>
-                      <p className="mt-2 break-words text-sm text-slate-300 sm:line-clamp-2">
+                      <h3 className="mt-4 eboard:mt-2 break-words text-xl eboard:text-[0.86rem] font-black text-white">{teacher.full_name}</h3>
+                      <p className="mt-2 eboard:mt-1 break-words text-sm eboard:text-[0.62rem] text-slate-300 sm:line-clamp-2">
                         {teacher.subjects.length ? teacher.subjects.join(', ') : m.teacherLeaderboard.generalSupport}
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-center">
-                      <div className="text-[11px] uppercase tracking-[0.22em] text-slate-400">{m.teacherLeaderboard.score}</div>
-                      <div className="mt-1 text-2xl font-black text-white">{teacher.activity_score.toFixed(2)}</div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 eboard:px-2.5 py-3 eboard:py-2 text-center">
+                      <div className="text-[11px] eboard:text-[0.52rem] uppercase tracking-[0.22em] text-slate-400">{m.teacherLeaderboard.score}</div>
+                      <div className="mt-1 text-2xl eboard:text-[0.88rem] font-black text-white">{teacher.activity_score.toFixed(2)}</div>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="mt-4 eboard:mt-2 flex flex-wrap gap-2 eboard:gap-1">
                     {(badgeMap[teacher.teacher_id] ?? []).map((badge) => (
                       <TeacherBadgePill key={badge} type={badge} compact />
                     ))}
                   </div>
 
-                  <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div className="mt-5 eboard:mt-3 grid grid-cols-2 gap-3 eboard:gap-2">
                     <CardMetric label={m.teacherDetail.qualifications} value={teacher.qualification_count} />
                     <CardMetric label={m.teacherLeaderboard.podiumStudents} value={teacher.unique_students_count} />
                     <CardMetric label={m.teacherDetail.activeDays} value={teacher.active_days_count} />
@@ -407,9 +407,9 @@ export default function TeacherLeaderboard({
 
 function CardMetric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3">
-      <div className="text-[11px] uppercase tracking-[0.22em] text-slate-400">{label}</div>
-      <div className="mt-2 text-xl font-black text-white">{value}</div>
+    <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 eboard:px-2.5 py-3 eboard:py-2">
+      <div className="text-[11px] eboard:text-[0.52rem] uppercase tracking-[0.22em] text-slate-400">{label}</div>
+      <div className="mt-2 eboard:mt-1 text-xl eboard:text-[0.82rem] font-black text-white">{value}</div>
     </div>
   );
 }
